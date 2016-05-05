@@ -1,13 +1,13 @@
 {
-  "name": "mvp_mebn",
-  "version": "0.0.2",
+  "name": "platform",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/NVBespalov/platform.git"
   },
   "license": "MIT",
-  "description": "MongoDB Express.js Backbone.js Node.js stack prototype",
-  "main": "index.js",
+  "description": "Webpack powered platform",
+  "main": "./server/index.js",
   "scripts": {
     "dev": "set NODE_ENV=development&& node ./server/index.js",
     "bundle": "node node_modules/webpack/bin/webpack -p --config ./config/webpack.config.js",
