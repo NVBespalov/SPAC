@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "repository": {
     "type": "git",
-    "url": "git://github.com/nvbespalov/platform.git"
+    "url": "git://github.com/NVBespalov/platform.git"
   },
   "license": "MIT",
   "description": "MongoDB Express.js Backbone.js Node.js stack prototype",
