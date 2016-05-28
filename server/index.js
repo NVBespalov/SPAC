@@ -1,4 +1,5 @@
 'use strict';
+process.env.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 var express = require('express'), app = express(), config = require('config'), bodyParser = require('body-parser'),
     logger = require('./winston')(module), compression = require('compression'), winston = require('winston'),
     http = require('http'), swig = require('swig');
@@ -47,8 +48,15 @@ require('./db.connect');
 // Express MongoDB session init
 require('./express.store.js')(app);
 
-// Bundle front-end (development)
-process.env.NODE_ENV === 'development' ? require('./bundle.js')(app) : void 0;
+
+// Redirect to webpack dev server to acquire the frontend app (development ONLY!!!)
+if(process.env.NODE_ENV === 'development') {
+    app.all('/build/*', function (req, res) {
+        require('http-proxy').createProxyServer().web(req, res, {
+            target: 'http://localhost:'+ 3001
+        });
+    });
+}
 
 // server init
 app.server = http.createServer(app);
