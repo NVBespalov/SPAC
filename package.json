@@ -1,6 +1,6 @@
 {
   "name": "platform",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/NVBespalov/platform.git"
@@ -9,7 +9,7 @@
   "description": "Webpack powered platform",
   "main": "./server/index.js",
   "scripts": {
-    "dev": "set NODE_ENV=development&& node ./server/index.js",
+    "dev": "set NODE_ENV=development&& node ./server/index.js&&node ./server/webpack",
     "bundle": "node node_modules/webpack/bin/webpack -p --config ./config/webpack.config.js",
     "doc": "node ./node_modules/jsdoc/jsdoc -c ./config/jsdoc.config.json ./"
   },
