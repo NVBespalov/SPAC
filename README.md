@@ -17,20 +17,21 @@ and a frontend application primitives to interact with it
     - server/tests/       � TDD BDD Functional Regressive Integration
     - package.json        � remembers all packages that your app depends on and their versions
 
-## Installation
-Install nodejs https://nodejs.org/
+# Installation
 
+### Install nodejs 
+sxhttps://nodejs.org/
 
-Install mongodb https://docs.mongodb.com/manual/installation/#mongodb-community-edition
+### Install mongodb 
+https://docs.mongodb.com/manual/installation/#mongodb-community-edition
+
 ### Download the Source
-
 ```bash
 $ git clone https://github.com/NVBespalov/platform
 $ cd ./platform
 ```
 
 ### Installing node modules
-
 ```bash
 $ npm i 
 $ npm run dev ```
