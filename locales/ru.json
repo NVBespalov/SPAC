@@ -1,0 +1,9 @@
+{
+  "building project": "Идет сборка артефакта, пожалуйста подождите...",
+  "webpack server is running in env": "Сервер webpack запущен в окружении %s",
+  "webpack proxy": "Прокси сервер webpack доступен по адресу http://%s:%s",
+  "express running in env": "Сервер express запущен в окружении %s",
+  "express server running on": "Сервер express доступен по адресу http://%s:%s",
+  "User not found": "Пользователь с указанной комбинацией учетных данных не найден",
+  "Wrong password": "Неверный пароль"
+}

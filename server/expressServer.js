@@ -1,26 +1,27 @@
 'use strict';
 const path = require('path');
 process.env.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
-process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR ? process.env.NODE_CONFIG_DIR : path.resolve(__dirname + './../../config');
+process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR ? process.env.NODE_CONFIG_DIR : path.resolve(__dirname + './../config');
 const express = require('express'), app = express(), config = require('config'), bodyParser = require('body-parser'),
     compression = require('compression'), https = require('https'), http = require('http'), fs = require('fs'),
-    serverKey = __dirname + '/server.key', serverCert = __dirname + '/server.crt', redis = require('redis'),
+    serverKey = __dirname + '/server.key', serverCert = __dirname + '/server.crt',
     i18n = require('./localizer')(app), logger = require('morgan'), helmet = require('helmet');
 
 console.info("==================");
 console.info(i18n.__('express running in env', process.env.NODE_ENV));
 console.info("==================");
 
-const expressSession = require('express-session');
-const RedisStore = require('connect-redis')(expressSession);
 app.use(require('./error/sendHttpError'));
 app.use(helmet());
 app.use(express.static(path.resolve(__dirname, './../public')));
-app.use(expressSession(config.get('session')));
+
+require('./db.connect');
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(compression());
-new RedisStore({client: redis.createClient()});
+
+require('./express.store.js')(app);
 
 if (process.env.NODE_ENV === 'development') {
     app.use(logger('dev'));

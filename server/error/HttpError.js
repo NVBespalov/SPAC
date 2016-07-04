@@ -1,4 +1,4 @@
-const path = require('path'), inherit = require('./../../utils/Object').inherit, http = require('http');
+const path = require('path'), inherits = require('util').inherits, http = require('http');
 function HttpError (status, message) {
     Error.apply(this, arguments);
     Error.captureStackTrace(this, HttpError);
@@ -6,7 +6,7 @@ function HttpError (status, message) {
     this.message = message || http.STATUS_CODES(status) || 'Error';
 }
 
-inherit(HttpError, Error);
+inherits(HttpError, Error);
 
 HttpError.prototype.name = 'HttpError';
 module.exports = HttpError;

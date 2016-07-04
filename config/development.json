@@ -4,6 +4,18 @@
     "httpPort": 4000,
     "httpsPort": 3443
   },
+  "dbConfig": {
+    "host": "localhost",
+    "port": 27017,
+    "dbName": "platform-dev",
+    "options": {
+      //db: { native_parser: true },
+      //server: { poolSize: 5 },
+      //replset: { rs_name: 'myReplicaSetName' },
+      //user: 'myUserName',
+      //pass: 'myPassword'
+    }
+  },
   "logger": {
     "level": "info",
     "json": false,
@@ -30,6 +42,11 @@
     },
     "resave": false,
     "saveUninitialized": true
+  },
+  "mongoStore":{
+    //    url: 'mongodb://localhost/test-app',
+    //    autoRemove: 'native', // Default
+    "ttl": 1209600 //14 * 24 * 60 * 60 // = 14 days. Default
   }
 }
 

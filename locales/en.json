@@ -1,0 +1,9 @@
+{
+  "building project": "Bundling project, please wait...",
+  "webpack server is running in env": "webpack development server is running in %s environment",
+  "webpack proxy": "Webpack development server proxy is available at host http://%s:%s",
+  "express running in env": "Express server is running in %s environment",
+  "express server running on": "Express Server is listening at http://%s:%s",
+  "User not found": "User not found",
+  "Wrong password": "Wrong Password"
+}

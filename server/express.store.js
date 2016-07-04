@@ -17,16 +17,7 @@ var genid = function(req){
 };
 
 module.exports = function (app) {
-    var mongoStoreCfg = {mongooseConnection: mongoose.connection};
-    Object.assign(mongoStoreCfg, config.get('mongoStore'));
-
-    var sessionCfg = {store: new MongoStore(mongoStoreCfg)};
-    Object.assign(sessionCfg, {
-        secret: 'secret',
-        resave: false,
-        saveUninitialized: false,
-        genid: genid
-    });
+    var mongodbStoreCfg = Object.assign({}, {mongooseConnection: mongoose.connection}, config.get('mongoStore'));
+    var sessionCfg  = Object.assign({}, {store: new MongoStore(mongodbStoreCfg), genid: genid}, config.get('session'));
     app.use(session(sessionCfg));
-
 };

@@ -1,34 +1,33 @@
 'use strict';
-var express = require('express'), path = require('path'), router = express.Router(),
-    getPath = require('deep').getPath, crypto = require('crypto'), HttpError = require('./../error/HttpError');
-
-
-function encryptPassword(password, salt) {
-    return crypto.createHmac('sha1', salt).update(password).digest('hex');
+var express = require('express'), router = express.Router(),
+   crypto = require('crypto'), User = require('mongoose').model('User');
+function findUser (req, res, next) {
+    var query = {email: req.body.email.toLowerCase()};
+    User.findOne(query, function (err, doc) {
+        if (err) {
+            return next(err);
+        }
+        if (!doc) {
+            logger.info('There was an error with your E-Mail/Password combination. Please try again.Email: ' + query.email);
+            return next(new BadRequest('There was an error with your E-Mail/Password combination. Please try again.'));
+        }
+        
+        if (doc.authenticate(req.body.password)) {
+            sessionRegenerate(doc, req, next);
+        } else {
+            req.session.user = undefined;
+            next(new Error('There was an error with your E-Mail/Password combination. Please try again.'));
+        }
+    })
 }
-function makeSalt() {
-    return Math.round((new Date().valueOf() * Math.random())) + '';
-}
+var sessionRegenerate = function (user, req, next) {
+    req.session.user = user;
+    next();
+};
+router.post('/signin', findUser, require('./../controllers/auth.controller').signin);
+router.post('/signup', require('./../controllers/auth.controller').signup);
+router.post('/signout', require('./../controllers/auth.controller').signout);
 
-router.post('/login', function (req, res, next) {
-    const blackList = ['hashedPassword', 'salt'];
-    user.hashedPassword === encryptPassword(getPath(req, 'body.password'), getPath(user, 'salt') + '') ?
-        res.json(omit(user, blackList))
-        :
-        next(new HttpError(403, res.__('Wrong password')))
-});
-router.post('/register', function (req, res, next) {
-    var salt = makeSalt();
-    const user = {
-        salt: salt,
-        hashedPassword: encryptPassword(getPath(req, 'body.password'), salt),
-        email: getPath(req, 'body.email')
-    };
-    sqlliteCrudFactory
-        .create({db: db, tableName: 'users', values: user})
-        .then(res.json.bind(res))
-        .catch(next)
-});
 module.exports = function (app) {
-    app.use('/users', router);
+    app.use('/auth', router);
 };

@@ -9,6 +9,6 @@ var db = mongoose.connect(uri, options);
 
 
 // include all models
-//require('../models');
+require('./models/index.js');
 
 module.exports = db;
