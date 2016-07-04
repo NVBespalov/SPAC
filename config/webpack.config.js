@@ -1,7 +1,8 @@
 'use strict';
-var Webpack = require('webpack'), path = require('path'), buildPath = path.resolve(__dirname, './../public/', 'build'),
-    mainPath = path.resolve(__dirname, './../app', 'index.js'), config = require('config'),
-    nodeModulesPath = path.resolve(__dirname, 'node_modules');
+var Webpack = require('webpack'), path = require('path'), buildPath = path.resolve(__dirname, './../client/public/', 'build'),
+    mainPath = path.resolve(__dirname, './../client/app', 'index.js'), config = require('config'),
+    nodeModulesPath = path.resolve(__dirname, 'node_modules'), pJOSN = require('./../package.json');
+
 var webpackConfig = {
     entry: [
         mainPath
@@ -9,20 +10,27 @@ var webpackConfig = {
     output: {
         path: buildPath,
         filename: 'bundle.js',
-        publicPath: '/build/'
+        publicPath: config.get('webpack.server.publicPath')
     },
     module: {
         loaders: [
-            { test: /\.ejs$/, loader: "ejs-loader?variable=data" },
             { test: /\.json$/, loader: 'json-loader'},
             { test: /\.sass$/, loader: "style!css!sass?indentedSyntax" },
             { test: /\.scss$/, loaders: ["style", "css", "sass"]},
-            { test: /\.js$/, loader: 'babel', exclude: nodeModulesPath }
+            { test: /\.js$/, loader: 'babel', exclude: nodeModulesPath },
+            { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
+            { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" }
         ]
     },
     plugins: [
         new Webpack.optimize.DedupePlugin(),
-        new Webpack.optimize.UglifyJsPlugin({compress: {warnings: false}})
+        new Webpack.optimize.UglifyJsPlugin({compress: {warnings: false}}),
+        new Webpack.DefinePlugin({
+            VERSION: JSON.stringify(pJOSN.version),
+            BROWSER_SUPPORTS_HTML5: true,
+            ENVIRONMENT: process.env.NODE_ENV
+        }
+        )
     ]
 };
 if (process.env.NODE_ENV === 'development') {
