@@ -7,16 +7,30 @@ const h = require('virtual-dom/h');
 const diff = require('virtual-dom/diff');
 const patch = require('virtual-dom/patch');
 const createElement = require('virtual-dom/create-element');
+const xhr = require('./../utils/XHR').xhr;
+
 
 const initialState = {
     session: null
 };
 
+function login(e, subject$) {
+    const elements = e.target.elements;
+    Observable.fromPromise(xhr({
+        url: '/auth/signin',
+        method: 'POST',
+        data: {email: elements.email.value, password: elements.password.value}
+    }))
+        .subscribe(r=> {
+            subject$.next({session: r});
+        });
+}
 function render(subject$, state) {
     if (state.session === null) {
         return h('div', {className: 'container modal'}, [
             h('form', {
-                className: 'login', onsubmit: e=> {
+                className: 'login',
+                onsubmit: function onSignIn (e) {
                     login(e, subject$);
                     return false;
                 }
