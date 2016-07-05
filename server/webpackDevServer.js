@@ -3,10 +3,10 @@
  */
 const path = require('path');
 process.env.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
-process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR ? process.env.NODE_CONFIG_DIR : path.resolve(__dirname + './../../config');
+process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR ? process.env.NODE_CONFIG_DIR : path.resolve(__dirname + './../config');
 
 const Webpack = require('webpack'), WebpackDevServer = require('webpack-dev-server'),
-    webpackConfig = require('./../../config/webpack.config.js'), compiler = Webpack(webpackConfig),
+    webpackConfig = require('./../config/webpack.config.js'), compiler = Webpack(webpackConfig),
     config = require('config'), i18n = require('./localizer')();
 
 console.info("==================");
