@@ -1,6 +1,6 @@
 'use strict';
 var Webpack = require('webpack'), path = require('path'), buildPath = path.resolve(__dirname, './../client/public/', 'build'),
-    mainPath = path.resolve(__dirname, './../client/app', 'index.js'), config = require('config'),
+    mainPath = path.resolve(__dirname, './../app', 'index.js'), config = require('config'),
     nodeModulesPath = path.resolve(__dirname, 'node_modules'), pJOSN = require('./../package.json');
 
 var webpackConfig = {
