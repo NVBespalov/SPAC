@@ -8,35 +8,35 @@ const diff = require('virtual-dom/diff');
 const patch = require('virtual-dom/patch');
 const createElement = require('virtual-dom/create-element');
 const xhr = require('./../utils/XHR').xhr;
-
+const formFieldsHandlers = {text: textFieldHandler, email: textFieldHandler, password:textFieldHandler};
+const extend = require('extend');
+function textFieldHandler(e){
+    let result = {};
+    let fieldResult = {};
+    fieldResult[e.target.name] = e.target.value;
+    result[e.target.closest('form').name] = fieldResult;
+    return result;
+}
 
 const initialState = {
     session: null,
-    signIn: true
+    signIn: {},
+    signUp: {},
+    currentFormType: 'signIn'
 };
 
-function signIn(e, subject$) {
-    const elements = e.target.elements;
+function auth(subject$, state) {
+    debugger
     Observable.fromPromise(xhr({
-        url: '/auth/signin',
+        url: `/auth/${state.currentFormType === 'signIn' ? 'signin' : 'signup'}`,
         method: 'POST',
-        data: {email: elements.email.value, password: elements.password.value}
+        data: state[state.currentFormType]
     }))
         .subscribe(r=> {
-            subject$.next({session: r});
+            state.currentFormType === 'signIn' ? subject$.next({session: r}) : subject$.next({currentFormType:'signIn'});
         });
 }
-function signUp(e, subject$) {
 
-    Observable.fromPromise(xhr({
-        url: '/auth/signin',
-        method: 'POST',
-        data: {email: {}}
-    }))
-        .subscribe(r=> {
-            subject$.next({session: r});
-        });
-}
 function renderSignInBody() {
     return [
         h('div', {className: 'form-group'}, [
@@ -90,32 +90,32 @@ function render(subject$, state) {
     if (state.session === null) {
         return h('div', {className: 'container modal'}, [
             h('form', {
-                className: state.signIn ? 'sign-in' : 'sign-up',
-                name: state.signIn ? 'signIn' : 'signUp',
+                className: state.currentFormType === 'signIn' ? 'sign-in' : 'sign-up',
+                name: state.currentFormType,
                 onsubmit: function onSignIn(e) {
-                    state.signIn ? signIn(e, subject$) : signUp(e, subject$);
+                    auth(subject$, state);
                     return false;
                 }
             }, [
                 h('div', {className: 'header'}, [
-                    state.signIn ? 'Sign In' : 'Sign Up',
+                    state.currentFormType === 'signIn' ? 'Sign In' : 'Sign Up',
                     h('div', {className: 'form-type-toggle row'}, [
                         'or you can',
                         h('div', {
                             className: 'change-form-type', onclick: function onClickChangeType() {
-                                subject$.next({signIn: state.signIn ? false : true});
+                                subject$.next(state.currentFormType === 'signIn' ? {currentFormType: 'signUp'} : {currentFormType:'signIn'});
                             }
-                        }, [state.signIn ? 'Sign Up' : 'Sign In'])
+                        }, [state.currentFormType === 'signIn' ? 'Sign Up' : 'Sign In'])
                     ])
                 ]),
-                h('div', {className: 'body'}, state.signIn ? renderSignInBody() : renderSignUpBody()),
+                h('div', {className: 'body'}, state.currentFormType === 'signIn' ? renderSignInBody() : renderSignUpBody()),
                 h('div', {className: 'operations'}, [
                     h('input', {type: 'submit'})
                 ])
             ])
         ]);
     } else {
-        []
+        [];
     }
 }
 
@@ -128,32 +128,24 @@ Observable.fromEvent(document, 'DOMContentLoaded')
 
         let tree, rootNode;
 
-        function handleTargetValue(e) {
-            return e.target.value;
+        function handleFromEventValue(e) {
+            return formFieldsHandlers[e.target.type](e);
         }
 
-        const change$ = Observable.fromEvent($body, 'change').map(handleTargetValue);
-        const paste$ = Observable.fromEvent($body, 'paste').map(handleTargetValue);
-        const keyup$ = Observable.fromEvent($body, 'keyup').map(handleTargetValue);
+        const change$ = Observable.fromEvent($body, 'change').map(handleFromEventValue);
+        const paste$ = Observable.fromEvent($body, 'paste').map(handleFromEventValue);
+        const keyup$ = Observable.fromEvent($body, 'keyup').map(handleFromEventValue);
 
         Observable
-            .combineLatest(
-                change$,
-                paste$,
-                keyup$,
-                function(s1, s2,s3) {
-                    debugger;
-                    return s1 && s2 && s3
-                }
-            )
+            .merge(change$, paste$, keyup$)
             .subscribe(function(a){
-                debugger
+                subject$.next(a);
             });
 
         const state$ = subject$
             .startWith(currentState)
             .scan((prev, next)=> {
-                const currentState = Object.assign({}, prev, next);
+                const currentState = extend(true, {}, prev, next);
                 localStorage.setItem('state', JSON.stringify(currentState));
                 return currentState;
             });
