@@ -37,11 +37,8 @@
   },
   "session": {
     "secret": "the Secret",
-    "cookie": {
-      "secure": true
-    },
     "resave": false,
-    "saveUninitialized": true
+    "saveUninitialized": false
   },
   "mongoStore":{
     //    url: 'mongodb://localhost/test-app',

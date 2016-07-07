@@ -1,4 +1,5 @@
 'use strict';
-module.exports = function (app) {
-    require('./Users')(app)
+const authRouter = require('./Auth');
+module.exports = function routerBootstrap (app) {
+    app.use('/auth', authRouter);
 };

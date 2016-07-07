@@ -50,7 +50,7 @@ module.exports = {
      * @returns {*}
      */
     signout: function authSignOut(req, res, next) {
-        if (req.session) {
+        if (req.session && req.session.user) {
             return req.session.destroy(function onSessionDestroy() {
                 res.json({data:{}});
             });
