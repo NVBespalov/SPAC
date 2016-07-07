@@ -32,7 +32,6 @@ function textFieldHandler(e) {
 }
 
 function auth(subject$, state) {
-    debugger
     Observable.fromPromise(xhr({
         url: `/auth/${getPath(state, 'currentFormType') === 'signIn' ? 'signin' : 'signup'}`,
         method: 'POST',
