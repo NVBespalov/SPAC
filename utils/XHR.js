@@ -15,7 +15,7 @@ const getPath =  require('./objects').getPath;
  * @returns {Promise}
  */
 module.exports.xhr = options => {
-    return new Promise(function (res) {
+    return new Promise(function (res, rej) {
         const xhr = new XMLHttpRequest();
         const headers = getPath(options, 'headers') || {'Content-Type': 'application/json; charset=UTF-8'};
         const data = getPath(options, 'data') ? JSON.stringify(getPath(options, 'data')) : null;
@@ -26,7 +26,8 @@ module.exports.xhr = options => {
                 res(JSON.parse(xhr.responseText));
             }
             else {
-                //debugger
+                debugger
+                rej()
             }
         };
 

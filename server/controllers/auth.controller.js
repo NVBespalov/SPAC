@@ -49,14 +49,13 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-    signout: function authSignOut(req, res) {
-        if (req.session && req.session.user) {
-            return req.session.destroy(function () {
-                logger.info('signout successfully: ');
-                res.status(200).end();
+    signout: function authSignOut(req, res, next) {
+        if (req.session) {
+            return req.session.destroy(function onSessionDestroy() {
+                res.json({data:{}});
             });
         }
-        res.status(400).end('first, log in to sign out');
+        next(new Error('User not logged in'))
     }
 
 };

@@ -8,16 +8,16 @@ function sessionRegenerate(user, req, next) {
 }
 function findUser (req, res, next) {
     var query = {email: req.body.email.toLowerCase()};
-    User.findOne(query, function onUserFind(err, doc) {
+    User.findOne(query, function onUserFind(err, user) {
         if (err) {
             return next(err);
         }
-        if (!doc) {
+        if (!user) {
             return next(new Error('There was an error with your E-Mail/Password combination. Please try again.'));
         }
         
-        if (doc.authenticate(req.body.password)) {
-            sessionRegenerate(doc, req, next);
+        if (user.authenticate(req.body.password)) {
+            sessionRegenerate(user, req, next);
         } else {
             req.session.user = undefined;
             next(new Error('There was an error with your E-Mail/Password combination. Please try again.'));

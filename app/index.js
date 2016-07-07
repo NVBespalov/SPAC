@@ -31,6 +31,10 @@ function textFieldHandler(e) {
     return result;
 }
 
+function handleFromEventValue(e) {
+    return formFieldsHandlers[e.target.type](e);
+}
+
 function auth(subject$, state) {
     Observable.fromPromise(xhr({
         url: `/auth/${getPath(state, 'currentFormType') === 'signIn' ? 'signin' : 'signup'}`,
@@ -116,6 +120,18 @@ function renderSignUpBody(subject$, state) {
         ])];
 }
 
+function signOut(subject$, state) {
+    Observable.fromPromise(xhr({
+        url: `/auth/signout`,
+        method: 'POST'
+    }))
+        .subscribe(function onAuthSuccess(r) {
+            debugger
+            getPath(state, 'currentFormType') === 'signIn' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'signIn'});
+        }, function onAuthError(r) {
+            debugger
+        });
+}
 function render(subject$, state) {
     if (state.session === null) {
         return h('div', {class: {container: true, modal: true}}, [
@@ -153,7 +169,8 @@ function render(subject$, state) {
             ])
         ]);
     } else {
-        [];
+        signOut(subject$, state);
+        return [];
     }
 }
 
@@ -163,33 +180,25 @@ Observable.fromEvent(document, 'DOMContentLoaded')
 
         const subject$ = new Subject();
         const currentState = localStorage.getItem('state') && JSON.parse(localStorage.getItem('state')) || initialState;
-
-        let tree;
-
-        function handleFromEventValue(e) {
-            return formFieldsHandlers[e.target.type](e);
-        }
-
         const change$ = Observable.fromEvent($container, 'change').map(handleFromEventValue);
         const paste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
         const keyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
 
+        let tree;
+
         Observable
             .merge(change$, paste$, keyup$)
-            .subscribe(function (a) {
-                debugger
-                subject$.next(a);
-            });
+            .subscribe(subject$.next.bind(subject$));
 
         const state$ = subject$
             .startWith(currentState)
-            .scan((prev, next)=> {
+            .scan(function processNextState (prev, next) {
                 const currentState = extend(true, {}, prev, next);
                 localStorage.setItem('state', JSON.stringify(currentState));
                 return currentState;
             });
 
-        state$.subscribe(state => {
+        state$.subscribe(function processStateChanges (state) {
             if (tree) {
                 tree = patch(tree, render(subject$, state));
             } else {
