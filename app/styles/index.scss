@@ -143,6 +143,59 @@ body {
   justify-content: flex-start;
 }
 
+.form-group {
+  position:relative;
+  margin-bottom:45px;
+  font-size: 24px;
+  > input {
+    border: 0;
+    font-size: inherit;
+    border-bottom: 1px solid #333333;
+    display: block;
+    width: 100%;
+    &:focus {
+      outline: none;
+    }
+    &:focus ~ label, &.has-value ~ label {
+      top: -23px;
+      font-size: 14px;
+      left:0;
+      color: #3399cc;
+    }
+    &:focus ~ .bar:before, &:focus ~ .bar:after {
+      width: 50%;
+    }
+  }
+  > label {
+    color:#999;
+    font-size:inherit;
+    font-weight:normal;
+    position:absolute;
+    pointer-events:none;
+    left:5px;
+    top:-4px;
+    transition:0.2s ease all;
+  }
+  > .bar {
+    position: relative;
+    display: block;
+    &:before, &:after {
+      content: '';
+      height: 2px;
+      width: 0;
+      bottom: 1px;
+      position: absolute;
+      background: #5264AE;
+      transition: 0.2s ease all;
+    }
+    &:before {
+      left: 50%;
+    }
+    &:after {
+      right: 50%;
+    }
+  }
+}
 .container {
   height: 100vh;
   &.modal {
@@ -177,59 +230,6 @@ body {
         flex-direction: column;
         padding-left: 25px;
         padding-right: 25px;
-        > .form-group {
-          position:relative;
-          margin-bottom:45px;
-          font-size: 24px;
-          > input {
-            border: 0;
-            font-size: inherit;
-            border-bottom: 1px solid #333333;
-            display: block;
-            width: 100%;
-            &:focus {
-              outline: none;
-            }
-            &:focus ~ label, &:valid ~ label {
-              top: -23px;
-              font-size: 14px;
-              left:0;
-              color: #3399cc;
-            }
-            &:focus ~ .bar:before, &:focus ~ .bar:after {
-              width: 50%;
-            }
-          }
-          > label {
-            color:#999;
-            font-size:inherit;
-            font-weight:normal;
-            position:absolute;
-            pointer-events:none;
-            left:5px;
-            top:-4px;
-            transition:0.2s ease all;
-          }
-          > .bar {
-            position: relative;
-            display: block;
-            &:before, &:after {
-              content: '';
-              height: 2px;
-              width: 0;
-              bottom: 1px;
-              position: absolute;
-              background: #5264AE;
-              transition: 0.2s ease all;
-            }
-            &:before {
-              left: 50%;
-            }
-            &:after {
-              right: 50%;
-            }
-          }
-        }
       }
       > .operations {
         justify-content: center;

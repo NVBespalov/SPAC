@@ -3,21 +3,19 @@ require('./styles/index.scss');
 
 const Observable = require('rxjs/rx').Observable;
 const Subject = require('rxjs/rx').Subject;
-const h = require('virtual-dom/h');
-const diff = require('virtual-dom/diff');
-const patch = require('virtual-dom/patch');
-const createElement = require('virtual-dom/create-element');
+const h = require('snabbdom/h');
 const xhr = require('./../utils/XHR').xhr;
-const formFieldsHandlers = {text: textFieldHandler, email: textFieldHandler, password:textFieldHandler};
 const extend = require('extend');
-function textFieldHandler(e){
-    let result = {};
-    let fieldResult = {};
-    fieldResult[e.target.name] = e.target.value;
-    result[e.target.closest('form').name] = fieldResult;
-    return result;
-}
-
+const getPath = require('./../utils/objects').getPath;
+const patch = require('snabbdom').init([
+    require('snabbdom/modules/class'),
+    require('snabbdom/modules/props'),
+    require('snabbdom/modules/attributes'),
+    require('snabbdom/modules/style'),
+    require('snabbdom/modules/eventlisteners'),
+    require('snabbdom/modules/dataset')
+]);
+const formFieldsHandlers = {text: textFieldHandler, email: textFieldHandler, password: textFieldHandler};
 const initialState = {
     session: null,
     signIn: {},
@@ -25,92 +23,132 @@ const initialState = {
     currentFormType: 'signIn'
 };
 
+function textFieldHandler(e) {
+    let result = {};
+    let fieldResult = {};
+    fieldResult[e.target.name] = e.target.value;
+    result[e.target.closest('form').name] = fieldResult;
+    return result;
+}
+
 function auth(subject$, state) {
     debugger
     Observable.fromPromise(xhr({
-        url: `/auth/${state.currentFormType === 'signIn' ? 'signin' : 'signup'}`,
+        url: `/auth/${getPath(state, 'currentFormType') === 'signIn' ? 'signin' : 'signup'}`,
         method: 'POST',
-        data: state[state.currentFormType]
+        data: getPath(state, getPath(state, 'currentFormType'))
     }))
-        .subscribe(r=> {
-            state.currentFormType === 'signIn' ? subject$.next({session: r}) : subject$.next({currentFormType:'signIn'});
+        .subscribe(function onAuthSuccess(r) {
+            debugger
+            getPath(state, 'currentFormType') === 'signIn' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'signIn'});
+        }, function onAuthError(r) {
+            debugger
         });
 }
 
-function renderSignInBody() {
+function renderSignInBody(subject$, state) {
     return [
-        h('div', {className: 'form-group'}, [
-            h('input', {className: '', required: true, name: 'email', type: 'text'}),
-            h('span', {className: 'highlight'}),
-            h('span', {className: 'bar'}),
+        h('div', {class: {'form-group': true}}, [
+            h('input', {
+                class: {'has-value': getPath(state, 'signIn.email') ? true : false},
+                props: {required: true, name: 'email', type: 'text', value: getPath(state, 'signIn.email')}
+            }),
+            h('span', {class: {highlight: true}}),
+            h('span', {class: {bar: true}}),
             h('label', ['Email'])
         ]),
-        h('div', {className: 'form-group'}, [
-            h('input', {className: '', required: true, name: 'password', type: 'password'}),
-            h('span', {className: 'highlight'}),
-            h('span', {className: 'bar'}),
+        h('div', {class: {'form-group': true}}, [
+            h('input', {
+                class: {'has-value': getPath(state, 'signIn.password') ? true : false},
+                props: {required: true, name: 'password', type: 'password'}
+            }),
+            h('span', {class: {highlight: true}}),
+            h('span', {class: {bar: true}}),
             h('label', ['Password'])
         ])];
 }
-function renderSignUpBody() {
+
+function renderSignUpBody(subject$, state) {
     return [
-        h('div', {className: 'form-group'}, [
-            h('input', {className: '', required: true, name: 'firstName', type: 'text'}),
-            h('span', {className: 'highlight'}),
-            h('span', {className: 'bar'}),
+        h('div', {class: {'form-group': true}}, [
+            h('input', {
+                class: {'has-value': getPath(state, 'signUp.firstName') ? true : false},
+                props: {required: true, name: 'firstName', type: 'text'}
+            }),
+            h('span', {class: {highlight: true}}),
+            h('span', {class: {bar: true}}),
             h('label', ['First Name'])
         ]),
-        h('div', {className: 'form-group'}, [
-            h('input', {className: '', required: true, name: 'lastName', type: 'text'}),
-            h('span', {className: 'highlight'}),
-            h('span', {className: 'bar'}),
+        h('div', {class: {'form-group': true}}, [
+            h('input', {
+                class: {'has-value': getPath(state, 'signUp.lastName') ? true : false},
+                props: {required: true, name: 'lastName', type: 'text'}
+            }),
+            h('span', {class: {highlight: true}}),
+            h('span', {class: {bar: true}}),
             h('label', ['Last Name'])
         ]),
-        h('div', {className: 'form-group'}, [
-            h('input', {className: '', required: true, name: 'displayName', type: 'text'}),
-            h('span', {className: 'highlight'}),
-            h('span', {className: 'bar'}),
+        h('div', {class: {'form-group': true}}, [
+            h('input', {
+                class: {'has-value': getPath(state, 'signUp.displayName') ? true : false},
+                props: {required: true, name: 'displayName', type: 'text'}
+            }),
+            h('span', {class: {highlight: true}}),
+            h('span', {class: {bar: true}}),
             h('label', ['Display Name'])
         ]),
-        h('div', {className: 'form-group'}, [
-            h('input', {className: '', required: true, name: 'email', type: 'email'}),
-            h('span', {className: 'highlight'}),
-            h('span', {className: 'bar'}),
+        h('div', {class: {'form-group': true}}, [
+            h('input', {
+                class: {'has-value': getPath(state, 'signUp.email') ? true : false},
+                props: {required: true, name: 'email', type: 'email'}
+            }),
+            h('span', {class: {highlight: true}}),
+            h('span', {class: {bar: true}}),
             h('label', ['Email'])
         ]),
-        h('div', {className: 'form-group'}, [
-            h('input', {className: '', required: true, name: 'password', type: 'password'}),
-            h('span', {className: 'highlight'}),
-            h('span', {className: 'bar'}),
+        h('div', {class: {'form-group': true}}, [
+            h('input', {
+                class: {'has-value': getPath(state, 'signUp.password') ? true : false},
+                props: {required: true, name: 'password', type: 'password'}
+            }),
+            h('span', {class: {highlight: true}}),
+            h('span', {class: {bar: true}}),
             h('label', ['Password'])
         ])];
 }
 
 function render(subject$, state) {
     if (state.session === null) {
-        return h('div', {className: 'container modal'}, [
+        return h('div', {class: {container: true, modal: true}}, [
             h('form', {
-                className: state.currentFormType === 'signIn' ? 'sign-in' : 'sign-up',
-                name: state.currentFormType,
-                onsubmit: function onSignIn(e) {
-                    auth(subject$, state);
-                    return false;
+                class: {
+                    'sign-in': getPath(state, 'currentFormType') === 'signIn',
+                    'sign-up': state.currentFormType === 'signUp'
+                },
+                props: {name: getPath(state, 'currentFormType')},
+                on: {
+                    submit: function onSignIn() {
+                        auth(subject$, state);
+                        return false;
+                    }
                 }
             }, [
-                h('div', {className: 'header'}, [
-                    state.currentFormType === 'signIn' ? 'Sign In' : 'Sign Up',
-                    h('div', {className: 'form-type-toggle row'}, [
+                h('div', {class: {header: true}}, [
+                    getPath(state, 'currentFormType') === 'signIn' ? 'Sign In' : 'Sign Up',
+                    h('div', {class: {'form-type-toggle': true, row: true}}, [
                         'or you can',
                         h('div', {
-                            className: 'change-form-type', onclick: function onClickChangeType() {
-                                subject$.next(state.currentFormType === 'signIn' ? {currentFormType: 'signUp'} : {currentFormType:'signIn'});
+                            class: {'change-form-type': true}, on: {
+                                click: function onClickChangeType() {
+                                    subject$.next({currentFormType: getPath(state, 'currentFormType') === 'signIn' ? 'signUp' : 'signIn'});
+                                }
                             }
-                        }, [state.currentFormType === 'signIn' ? 'Sign Up' : 'Sign In'])
+                        }, [getPath(state, 'currentFormType') === 'signIn' ? 'Sign Up' : 'Sign In'])
                     ])
                 ]),
-                h('div', {className: 'body'}, state.currentFormType === 'signIn' ? renderSignInBody() : renderSignUpBody()),
-                h('div', {className: 'operations'}, [
-                    h('input', {type: 'submit'})
+                h('div', {class: {body: true}}, getPath(state, 'currentFormType') === 'signIn' ? renderSignInBody(subject$, state) : renderSignUpBody(subject$, state)),
+                h('div', {class: {operations: true}}, [
+                    h('input', {props: {type: 'submit'}})
                 ])
             ])
         ]);
@@ -120,25 +158,26 @@ function render(subject$, state) {
 }
 
 Observable.fromEvent(document, 'DOMContentLoaded')
-    .map(e=>e.target.body)
-    .subscribe(function onDOMLoaded($body) {
+    .map(e=> e.target.body.appendChild(document.createElement('div')))
+    .subscribe(function onDOMLoaded($container) {
 
         const subject$ = new Subject();
         const currentState = localStorage.getItem('state') && JSON.parse(localStorage.getItem('state')) || initialState;
 
-        let tree, rootNode;
+        let tree;
 
         function handleFromEventValue(e) {
             return formFieldsHandlers[e.target.type](e);
         }
 
-        const change$ = Observable.fromEvent($body, 'change').map(handleFromEventValue);
-        const paste$ = Observable.fromEvent($body, 'paste').map(handleFromEventValue);
-        const keyup$ = Observable.fromEvent($body, 'keyup').map(handleFromEventValue);
+        const change$ = Observable.fromEvent($container, 'change').map(handleFromEventValue);
+        const paste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
+        const keyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
 
         Observable
             .merge(change$, paste$, keyup$)
-            .subscribe(function(a){
+            .subscribe(function (a) {
+                debugger
                 subject$.next(a);
             });
 
@@ -152,13 +191,9 @@ Observable.fromEvent(document, 'DOMContentLoaded')
 
         state$.subscribe(state => {
             if (tree) {
-                let newTree = render(subject$, state);
-                rootNode = patch(rootNode, diff(tree, newTree));
-                tree = newTree;
+                tree = patch(tree, render(subject$, state));
             } else {
-                tree = render(subject$, state);
-                rootNode = createElement(tree);
-                $body.appendChild(rootNode);
+                tree = patch($container, render(subject$, state));
             }
         });
     });

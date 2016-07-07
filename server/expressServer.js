@@ -19,9 +19,9 @@ require('./db.connect');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(compression());
+app.use(compression({}));
 
-require('./express.store.js')(app);
+require('./expressSessionStore')(app);
 
 if (process.env.NODE_ENV === 'development') {
     app.use(logger('dev'));
