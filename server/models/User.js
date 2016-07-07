@@ -92,7 +92,7 @@ userSchema.statics.fieldsForFilter = ['displayName', 'lastName', 'firstName'];
 /**
  * @description Password validation
  */
-userSchema.path('hashedPassword').validate(function() {
+userSchema.path('hashedPassword').validate(function validateHashedPassword () {
     if (this.purePassword === undefined) {
         return true;
     }
@@ -104,7 +104,7 @@ userSchema.path('hashedPassword').validate(function() {
  * prepare password
  * do not store password in db
  */
-userSchema.virtual('password').set(function (password) {
+userSchema.virtual('password').set(function setVirtualPassword(password) {
     this.purePassword = password;
     this.hashedPassword = this.encryptPassword(password);
 });
