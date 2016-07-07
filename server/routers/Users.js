@@ -1,9 +1,14 @@
 'use strict';
 var express = require('express'), router = express.Router(),
    crypto = require('crypto'), User = require('mongoose').model('User');
+
+function sessionRegenerate(user, req, next) {
+    req.session.user = user;
+    next();
+}
 function findUser (req, res, next) {
     var query = {email: req.body.email.toLowerCase()};
-    User.findOne(query, function (err, doc) {
+    User.findOne(query, function onUserFind(err, doc) {
         if (err) {
             return next(err);
         }
@@ -19,10 +24,7 @@ function findUser (req, res, next) {
         }
     })
 }
-var sessionRegenerate = function (user, req, next) {
-    req.session.user = user;
-    next();
-};
+
 router.post('/signin', findUser, require('./../controllers/auth.controller').signin);
 router.post('/signup', require('./../controllers/auth.controller').signup);
 router.post('/signout', require('./../controllers/auth.controller').signout);

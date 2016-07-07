@@ -12,7 +12,7 @@ module.exports = {
      * @param req
      * @param res
      */
-    signin: function (req, res) {
+    signin: function authSignIn(req, res) {
         if (req.session && req.session.user) {
             return res.json({
                 data: {
@@ -33,7 +33,7 @@ module.exports = {
      * @param res
      * @param next
      */
-    signup: function (req, res, next) {
+    signup: function authSignUp(req, res, next) {
         var user = new User(req.body);
         user.save(function (err) {
             if (err) {
@@ -49,7 +49,7 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-    signout: function (req, res) {
+    signout: function authSignOut(req, res) {
         if (req.session && req.session.user) {
             return req.session.destroy(function () {
                 logger.info('signout successfully: ');

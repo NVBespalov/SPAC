@@ -28,12 +28,12 @@ if (process.env.NODE_ENV === 'development') {
     http.createServer(app).listen(config.get('server.httpPort'), config.get('server.host'), function () {
         console.info(i18n.__('express server running on', config.get('server.host'), config.get('server.httpPort')));
     });
-    app.all('/build/*', function (req, res) { // Redirect to webpack dev server to acquire the frontend app (development ONLY!!!)
+    app.all('/build/*', function onGetBuildResources (req, res) { // Redirect to webpack dev server to acquire the frontend app (development ONLY!!!)
         const proxy = require('http-proxy').createProxyServer();
         proxy.web(req, res, {
             target: 'http://localhost:' + config.get('webpack.port')
         });
-        proxy.on('error', function (err, req, res) {
+        proxy.on('error', function onProxyError(err, req, res) {
             res.writeHead(500, {
                 'Content-Type': 'text/plain'
             });
