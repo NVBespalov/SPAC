@@ -51,7 +51,7 @@ function renderSignInBody(subject$, state) {
         h('div', {class: {'form-group': true}}, [
             h('input', {
                 class: {'has-value': getPath(state, 'signIn.email') ? true : false},
-                props: {required: true, name: 'email', type: 'text', value: getPath(state, 'signIn.email')}
+                props: {required: true, name: 'email', type: 'text', value: getPath(state, 'signIn.email') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -60,7 +60,7 @@ function renderSignInBody(subject$, state) {
         h('div', {class: {'form-group': true}}, [
             h('input', {
                 class: {'has-value': getPath(state, 'signIn.password') ? true : false},
-                props: {required: true, name: 'password', type: 'password'}
+                props: {required: true, name: 'password', type: 'password', value: getPath(state, 'signIn.password') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -73,7 +73,7 @@ function renderSignUpBody(subject$, state) {
         h('div', {class: {'form-group': true}}, [
             h('input', {
                 class: {'has-value': getPath(state, 'signUp.firstName') ? true : false},
-                props: {required: true, name: 'firstName', type: 'text'}
+                props: {required: true, name: 'firstName', type: 'text', value: getPath(state, 'signUp.firstName') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -82,7 +82,7 @@ function renderSignUpBody(subject$, state) {
         h('div', {class: {'form-group': true}}, [
             h('input', {
                 class: {'has-value': getPath(state, 'signUp.lastName') ? true : false},
-                props: {required: true, name: 'lastName', type: 'text'}
+                props: {required: true, name: 'lastName', type: 'text', value: getPath(state, 'signUp.lastName') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -91,7 +91,7 @@ function renderSignUpBody(subject$, state) {
         h('div', {class: {'form-group': true}}, [
             h('input', {
                 class: {'has-value': getPath(state, 'signUp.displayName') ? true : false},
-                props: {required: true, name: 'displayName', type: 'text'}
+                props: {required: true, name: 'displayName', type: 'text', value: getPath(state, 'signUp.displayName') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -100,7 +100,7 @@ function renderSignUpBody(subject$, state) {
         h('div', {class: {'form-group': true}}, [
             h('input', {
                 class: {'has-value': getPath(state, 'signUp.email') ? true : false},
-                props: {required: true, name: 'email', type: 'email'}
+                props: {required: true, name: 'email', type: 'email', value: getPath(state, 'signUp.email') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -109,7 +109,7 @@ function renderSignUpBody(subject$, state) {
         h('div', {class: {'form-group': true}}, [
             h('input', {
                 class: {'has-value': getPath(state, 'signUp.password') ? true : false},
-                props: {required: true, name: 'password', type: 'password'}
+                props: {required: true, name: 'password', type: 'password', value: getPath(state, 'signUp.password') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
