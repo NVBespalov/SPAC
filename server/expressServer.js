@@ -40,8 +40,6 @@ if (process.env.NODE_ENV === 'development') {
             res.end('Something went wrong. And we are reporting a custom error message.');
         });
     });
-
-
 } else if(process.env.NODE_ENV === 'production') {
     if (!fs.existsSync(serverKey) || !fs.existsSync(serverCert)) {
         console.info('\n(Copy paste the below commands one by one)\n');

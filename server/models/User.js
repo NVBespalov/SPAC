@@ -73,7 +73,8 @@ const userSchema = new mongoose.Schema({
         trim,
         unique,
         required,
-        lowercase
+        lowercase,
+        validate: [validateProperty, 'Please fill in your email']
     },
 
 
@@ -86,7 +87,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.statics.fieldsForFilter = ['displayName', 'lastName', 'firstName', 'roleName', 'groupName'];
+userSchema.statics.fieldsForFilter = ['displayName', 'lastName', 'firstName'];
 
 /**
  * @description Password validation
@@ -110,15 +111,12 @@ userSchema.virtual('password').set(function (password) {
 
 userSchema.virtual('password').get((password) => 'we don\'t contain pure password');
 
-userSchema.methods.authenticate = function(plainText) {
+userSchema.methods.authenticate = function authenticate (plainText) {
     return this.encryptPassword(plainText) === this.hashedPassword;
 };
 
-userSchema.methods.encryptPassword = function(password) {
-    return crypto
-        .createHmac('sha1', this.salt)
-        .update(password)
-        .digest('hex');
+userSchema.methods.encryptPassword = function encryptPassword (password) {
+    return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
 };
 const validateEmail = (val) => /.+\@.+\..+/.test(val);
 

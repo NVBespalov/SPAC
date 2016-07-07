@@ -127,7 +127,8 @@ function render(subject$, state) {
                 },
                 props: {name: getPath(state, 'currentFormType')},
                 on: {
-                    submit: function onSignIn() {
+                    submit: function onAuthSubmit (e) {
+                        e.preventDefault();
                         auth(subject$, state);
                         return false;
                     }

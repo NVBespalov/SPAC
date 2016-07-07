@@ -8,7 +8,6 @@ function findUser (req, res, next) {
             return next(err);
         }
         if (!doc) {
-            // logger.info('There was an error with your E-Mail/Password combination. Please try again.Email: ' + query.email);
             return next(new Error('There was an error with your E-Mail/Password combination. Please try again.'));
         }
         
