@@ -29,12 +29,12 @@ function loadUser(req, res, next) {
         if (err) {
             return next(err);
         } else if (!user) {
-            return next(new HTTPError('There was an error with your E-Mail/Password combination. Please try again.'));
+            return next(new HTTPError(404));
         } else if (user.authenticate(req.body.password)) {
             sessionRegenerate(user, req, next);
         } else {
             req.session.user = undefined;
-            next(new HTTPError('There was an error with your E-Mail/Password combination. Please try again.'));
+            next(new HTTPError(400));
         }
     })
 }
@@ -44,7 +44,7 @@ function loadUser(req, res, next) {
  */
 function isAuthorized (req, res, next) {
     if (!req.session.user) {
-        return next(new HTTPError('Un authorized'));
+        return next(new HTTPError(401));
     }
     next();
 }

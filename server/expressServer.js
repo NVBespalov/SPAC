@@ -62,4 +62,4 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 require('./routers')(app);
-require('./error/index')(app);
+require('./middlewares/error')(app);

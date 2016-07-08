@@ -1,7 +1,7 @@
 /**
  * Created by nickbespalov on 19.06.16.
  */
-const HttpError = require('./HttpError'), errorHandler = require('errorhandler');
+const HttpError = require('./../error/HttpError'), errorHandler = require('errorhandler');
 
 module.exports = function HTTPErrorHandler(app) {
     app.use(function (err, req, res, next) {
@@ -11,7 +11,7 @@ module.exports = function HTTPErrorHandler(app) {
             if(app.get('env') === 'development') {
                 errorHandler()(err, req, res, next);
             } else {
-                next()
+                next();
             }
         }
 

@@ -19,7 +19,7 @@ module.exports = {
                 data: req.session.user
             });
         }
-        return res.status(400).end();
+        return next(new HttpError(400));
     },
 
     /**
@@ -33,7 +33,6 @@ module.exports = {
      * @param next
      */
     signup: function authSignUp(req, res, next) {
-
         var user = new User(req.body);
         user.save(function (err) {
             if (err) {
@@ -52,10 +51,10 @@ module.exports = {
     signout: function authSignOut(req, res, next) {
         if (req.session && req.session.user) {
             return req.session.destroy(function onSessionDestroy() {
-                res.json({data:{}});
+                res.json({data:null});
             });
         }
-        next(new Error('User not logged in'))
+        next(new HttpError(400, 'User not logged in'));
     }
 
 };
