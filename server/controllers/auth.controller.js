@@ -2,7 +2,8 @@
  * Created by nickbespalov on 04.07.16.
  */
 'use strict';
-var mongoose = require('mongoose'), User = mongoose.model('User');
+const User =  require('mongoose').model('User'),
+    HttpError = require('./../error/HttpError');
 
 
 module.exports = {
@@ -15,9 +16,7 @@ module.exports = {
     signin: function authSignIn(req, res) {
         if (req.session && req.session.user) {
             return res.json({
-                data: {
-                    user: req.session.user
-                }
+                data: req.session.user
             });
         }
         return res.status(400).end();
@@ -34,6 +33,7 @@ module.exports = {
      * @param next
      */
     signup: function authSignUp(req, res, next) {
+
         var user = new User(req.body);
         user.save(function (err) {
             if (err) {

@@ -125,12 +125,10 @@ function signOut(subject$, state) {
         url: `/auth/signout`,
         method: 'POST'
     }))
-        .subscribe(function onAuthSuccess(r) {
-            debugger
-            getPath(state, 'currentFormType') === 'signIn' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'signIn'});
-        }, function onAuthError(r) {
-            debugger
-        });
+        .subscribe(
+            function onAuthSignOutSuccess() {subject$.next({session: null});},
+            function onAuthError() {debugger}
+        );
 }
 function render(subject$, state) {
     if (state.session === null) {

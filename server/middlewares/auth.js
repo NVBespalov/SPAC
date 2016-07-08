@@ -1,7 +1,7 @@
 /**
  * Created by nickbespalov on 07.07.16.
  */
-const User = require('mongoose').model('User');
+const User = require('mongoose').model('User'), HTTPError = require('./../error/HttpError');
 /**
  * @function sessionRegenerate
  * @desc Regenerate session for a newly logged-on user
@@ -24,19 +24,17 @@ function sessionRegenerate(user, req, next) {
  * @param next
  */
 function loadUser(req, res, next) {
-    var query = {email: req.body.email.toLowerCase()};
-    User.findOne(query, function (err, user) {
+    var conditions = {email: req.body.email.toLowerCase()};
+    User.findOne(conditions, function (err, user) {
         if (err) {
             return next(err);
         } else if (!user) {
-            return next(new Error('There was an error with your E-Mail/Password combination. Please try again.'));
-        }
-
-        if (user.authenticate(req.body.password)) {
+            return next(new HTTPError('There was an error with your E-Mail/Password combination. Please try again.'));
+        } else if (user.authenticate(req.body.password)) {
             sessionRegenerate(user, req, next);
         } else {
             req.session.user = undefined;
-            next(new Error('There was an error with your E-Mail/Password combination. Please try again.'));
+            next(new HTTPError('There was an error with your E-Mail/Password combination. Please try again.'));
         }
     })
 }
@@ -46,7 +44,7 @@ function loadUser(req, res, next) {
  */
 function isAuthorized (req, res, next) {
     if (!req.session.user) {
-        return next(new Error('Un authorized'));
+        return next(new HTTPError('Un authorized'));
     }
     next();
 }
