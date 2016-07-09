@@ -29,27 +29,18 @@ function loadUser(req, res, next) {
         if (err) {
             return next(err);
         } else if (!user) {
-            return next(new HTTPError(404));
-        } else if (user.authenticate(req.body.password)) {
+            return next(new HTTPError(404, 'User not found'));
+        }
+
+        if (user.authenticate(req.body.password)) {
             sessionRegenerate(user, req, next);
         } else {
             req.session.user = undefined;
-            next(new HTTPError(400));
+            next(new HTTPError(400, 'Wrong password'));
         }
-    })
-}
-/**
- *  if authorized
- *
- */
-function isAuthorized (req, res, next) {
-    if (!req.session.user) {
-        return next(new HTTPError(401));
-    }
-    next();
+    });
 }
 
 module.exports = {
-    loadUser: loadUser,
-    isAuthorized: isAuthorized
+    loadUser: loadUser
 };

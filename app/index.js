@@ -45,7 +45,7 @@ function auth(subject$, state) {
             debugger
             getPath(state, 'currentFormType') === 'signIn' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'signIn'});
         }, function onAuthError(r) {
-            debugger
+            subject$.next({error: r})
         });
 }
 
@@ -130,6 +130,7 @@ function signOut(subject$, state) {
             function onAuthError() {debugger}
         );
 }
+
 function render(subject$, state) {
     if (state.session === null) {
         return h('div', {class: {container: true, modal: true}}, [

@@ -2,7 +2,7 @@
  * Created by nickbespalov on 04.07.16.
  */
 'use strict';
-const User =  require('mongoose').model('User'),
+const User = require('mongoose').model('User'),
     HttpError = require('./../error/HttpError');
 
 
@@ -46,12 +46,13 @@ module.exports = {
      * @method signout
      * @param req
      * @param res
+     * @param next
      * @returns {*}
      */
     signout: function authSignOut(req, res, next) {
         if (req.session && req.session.user) {
             return req.session.destroy(function onSessionDestroy() {
-                res.json({data:null});
+                res.json({data: null});
             });
         }
         next(new HttpError(400, 'User not logged in'));

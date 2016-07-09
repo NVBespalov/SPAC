@@ -4,7 +4,7 @@ process.env.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'developmen
 process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR ? process.env.NODE_CONFIG_DIR : path.resolve(__dirname + './../config');
 const express = require('express'), app = express(), config = require('config'), bodyParser = require('body-parser'),
     compression = require('compression'), https = require('https'), http = require('http'), fs = require('fs'),
-    serverKey = __dirname + '/server.key', serverCert = __dirname + '/server.crt', validator = require('express-validator'),
+    serverKey = __dirname + '/server.key', serverCert = __dirname + '/server.crt',
     i18n = require('./localizer')(app), logger = require('morgan'), helmet = require('helmet');
 
 console.info("==================");
@@ -19,7 +19,6 @@ require('./db.connect');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(validator([]));
 app.use(compression({}));
 
 require('./expressSessionStore')(app);
