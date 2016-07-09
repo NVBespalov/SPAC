@@ -76,8 +76,6 @@ const userSchema = new mongoose.Schema({
         lowercase,
         validate: [validateProperty, 'Please fill in your email']
     },
-
-
     salt: {
         type: String,
         default: makeSalt
@@ -128,4 +126,5 @@ userSchema.methods.isValid = function() {
 };
 
 const User = mongoose.model('User', userSchema);
+
 module.exports = User;

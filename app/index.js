@@ -162,6 +162,7 @@ function render(subject$, state) {
                     ])
                 ]),
                 h('div', {class: {body: true}}, getPath(state, 'currentFormType') === 'signIn' ? renderSignInBody(subject$, state) : renderSignUpBody(subject$, state)),
+                h('div', {class: {messages: true}}, [getPath(state, 'error.message') || '']),
                 h('div', {class: {operations: true}}, [
                     h('input', {props: {type: 'submit'}})
                 ])

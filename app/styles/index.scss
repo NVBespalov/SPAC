@@ -249,6 +249,14 @@ body {
           }
         }
       }
+      > .messages {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        color: red;
+      }
       &.sign-in {
         height: 400px;
         width: 400px;

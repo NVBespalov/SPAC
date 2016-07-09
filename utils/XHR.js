@@ -27,9 +27,8 @@ module.exports.xhr = function XHR (options) {
             try {
                 parsedResponse = JSON.parse(getPath(e, 'target.responseText'));
             } catch (err) {
-                parsedResponse = err;
+                parsedResponse = new Error('Bad server response');
             }
-            debugger
             if (getPath(e, 'target.status') === 200) {
                 res(parsedResponse);
             }

@@ -3,7 +3,7 @@
  */
 'use strict';
 const User = require('mongoose').model('User'),
-    HttpError = require('./../error/HttpError');
+    HttpError = require('./../error/HttpError'), HttpValidationError = require('./../error/HttpValidationError');
 
 
 module.exports = {
@@ -36,9 +36,14 @@ module.exports = {
         var user = new User(req.body);
         user.save(function (err) {
             if (err) {
-                return next(err);
+                if(err.code === 11000) {
+                    next(new HttpValidationError(400, 'User with same email already registered', {email:''}));
+                } else {
+                    next(err);
+                }
+            } else {
+                res.json({data: req.body});
             }
-            res.json({data: req.body});
         });
     },
 
