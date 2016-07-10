@@ -17,8 +17,6 @@ const makeSalt = () => crypto.randomBytes(256).toString('hex');
  * @property {String} lastName - The user's last name.
  * @property {String} [displayName] - Mixed string of first and last names.
  * @property {String} email - The user's email.
- * @property {GroupModel} group - The user's group.
- * @property {RoleModel} role - The user's role
  * @property {String} salt - The salt to hash password
  * @property {String} hashedPassword - The hashed password
  * @example
@@ -28,14 +26,6 @@ const makeSalt = () => crypto.randomBytes(256).toString('hex');
  *  "email" : "super@admin.ru",
  *  "hashedPassword" : "d2215a728e465c2f54b6287562f7b6f8aa230f06",
  *  "salt" : "47227553264",
- *  "role" : {
- *      "name" : "admin",
- *      "resources" : [{
- *          name: 'read',
- *          permission: {"GET:/user": 1,"GET:/role": 1,"GET:/group": 1}
- *      }]
- *  },
- *  "group" : {name: 'rocket', group: null},
  *  "displayName" : "Super super"
  * }
  * @version 1.0
@@ -98,6 +88,7 @@ userSchema.path('hashedPassword').validate(function validateHashedPassword () {
     delete this.purePassword;
     return isValid;
 }, 'The passwords should contain at least 8 characters');
+
 /**
  * prepare password
  * do not store password in db
