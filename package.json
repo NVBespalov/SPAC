@@ -1,12 +1,12 @@
 {
-  "name": "platform",
-  "version": "0.0.2",
+  "name": "SPAC",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/NVBespalov/platform.git"
   },
   "license": "MIT",
-  "description": "Webpack powered platform",
+  "description": "Single page application constructor",
   "main": "./server/index.js",
   "scripts": {
     "dev": "set NODE_ENV=development&& node ./server/index.js&&node ./server/webpack",

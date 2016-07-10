@@ -1,6 +1,6 @@
 ## Synopsis
 
-The webpack powered platform.
+Single page application constructor.
 
 ## Description 
 Gives you the platform to build a single page application with an express server powered by  mongodb
