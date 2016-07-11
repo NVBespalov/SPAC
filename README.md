@@ -20,15 +20,15 @@ and a frontend application primitives to interact with it
 # Installation
 
 ### Install nodejs 
-sxhttps://nodejs.org/
+https://nodejs.org/
 
 ### Install mongodb 
 https://docs.mongodb.com/manual/installation/#mongodb-community-edition
 
 ### Download the Source
 ```bash
-$ git clone https://github.com/NVBespalov/platform
-$ cd ./platform
+$ git clone https://github.com/NVBespalov/SPAC
+$ cd ./SPAC
 ```
 
 ### Installing node modules
