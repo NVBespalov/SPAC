@@ -130,11 +130,23 @@ function renderSignUpBody(subject$, state) {
 //         );
 // }
 
-
+const render = function render (subject$, state) {
+    return h('form', {
+        class: {},
+        on: {
+            submit: function onAuthSubmit (e) {
+                e.preventDefault();
+                auth(subject$, state);
+                return false;
+            }
+        }
+    });
+}
 
 const FormWidget = module.exports = function AuthenticateWidget($container, initialState) {
     const defaultState = {};
     const subject$ = new Subject();
+
     const currentState = initialState || defaultState;
     const onChange$ = Observable.fromEvent($container, 'change').map(handleFromEventValue); //.takeUntil(Rx.Observable.timer(5000))
     const onPaste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
@@ -147,16 +159,14 @@ const FormWidget = module.exports = function AuthenticateWidget($container, init
     this.state = subject$
         .startWith(currentState)
         .scan(function processNextState (prev, next) {
-            const currentState = extend(true, {}, prev, next);
-            lSUtils.set(lSPath, currentState);
-            return currentState;
+            return extend(true, {}, prev, next);
         });
     
     this.state$ = this.state.subscribe(function processStateChanges (state) {
         if (tree) {
-            tree = patch(tree, render(subject$, state));
+            tree = patch(tree, render(this, state));
         } else {
-            tree = patch($container, render(subject$, state));
+            tree = patch($container, render(this, state));
         }
     }, function() {}, function(){$container.innerHTML = ''});
 };
@@ -165,18 +175,5 @@ FormWidget.prototype = {
     dispose: function AuthenticateWidgetDisposal () {
         this.state$.complete();
         this.formChanges$.complete();
-    },
-    render:function render(subject$, state) {
-        return h('form', {
-            class: {},
-            props: {name: getPath(state, 'currentFormType')},
-            on: {
-                submit: function onAuthSubmit (e) {
-                    e.preventDefault();
-                    auth(subject$, state);
-                    return false;
-                }
-            }
-        });
     }
 };

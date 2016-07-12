@@ -10,7 +10,7 @@ const getJSON$ = require('./../../../utils/XHR').getJSON$;
 const extend = require('extend');
 const getPath = require('./../../../utils/objects').getPath;
 const lSUtils = require('./../../../utils/objects').localStorage;
-const lSPath = 'authenticateWidgetState';
+const lSPath = 'authenticateScene';
 const patch = require('snabbdom').init([
     require('snabbdom/modules/class'),
     require('snabbdom/modules/props'),
@@ -19,10 +19,18 @@ const patch = require('snabbdom').init([
     require('snabbdom/modules/eventlisteners'),
     require('snabbdom/modules/dataset')
 ]);
-
+const render = function renderAuthenticateScene (subject$, state) {
+    return h('div.authenticate-scene', {hook: {
+        insert: function () {
+            debugger
+            subject$.next({currentForm: getPath(state, 'currentForm') || 'signIn'});
+        }
+    }}, []);
+};
 const AuthenticatePerspective = module.exports = function AuthenticatePerspective ($container, initialState) {
     debugger
-    const ctx = this;
+    let tree;
+    let form
     const subject$ = new Subject();
     const currentState = extend(true, {session: null, signInForm: null, signUpForm: null, currentForm: null}, lSUtils.get(lSPath), initialState);
     this.state = subject$
@@ -35,25 +43,19 @@ const AuthenticatePerspective = module.exports = function AuthenticatePerspectiv
 
     this.state$ = this.state.subscribe(function processStateChanges (state) {
 
-        if (ctx.tree) {
+        if (tree) {
             debugger
-            this.form = new FormWidget($container.querySelector('form'));
+            form = new FormWidget($container.querySelector('form'));
             // ctx.tree = patch(ctx.tree, ctx.render(subject$, state));
         } else {
-            ctx.tree = patch($container, ctx.render(subject$, state));
+            tree = patch($container, render(this, state));
+            debugger
         }
     }, function() {}, function(){$container.innerHTML = ''});
 };
 AuthenticatePerspective.prototype = {
     dispose: function disposeAuthenticatePerspective () {
 
-    },
-    render: function renderAuthenticateScene (subject$, state) {
-        return h('div.authenticate-scene', {hook: {
-            insert: function () {
-                debugger
-                subject$.next({currentForm: getPath(state, 'currentForm') || 'signIn'});
-            }
-        }}, []);
     }
+
 };
