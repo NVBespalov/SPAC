@@ -2,8 +2,8 @@
  * Created by nickbespalov on 12.07.16.
  */
 const Subject = require('rxjs/rx').Subject;
-const AuthenticateWidget = require('./authenticate/AuthenticateWidget');
-const ConstructorWidget = require('./constructor/constructorWidget');
+const ConstructorPerspective = require('./scenes/constructor/ConstructorScene');
+const AuthenticatePerspective = require('./scenes/authenticate/AuthenticateScene');
 const extend = require('extend');
 const getPath = require('./../utils/objects').getPath;
 const lSUtils = require('./../utils/objects').localStorage;
@@ -24,18 +24,18 @@ const ApplicationConstructor = module.exports = function ApplicationConstructor 
     this.state$ = this.state.subscribe(function onNextStateIndex(indexState){
             const session = indexState.session;
             if (session) {
-                const constructorWidget = new ConstructorWidget($container);
-                constructorWidget.state.subscribe(function(constructorWidgetState){
+                const constructorPerspective = new ConstructorPerspective($container);
+                constructorPerspective.state.subscribe(function(constructorPerspectiveState){
                     debugger;
                 });
             } else {
-                const authenticateWidget = new AuthenticateWidget($container);
-                authenticateWidget.state
+                const authenticatePerspective = new AuthenticatePerspective($container);
+                authenticatePerspective.state
                     .subscribe(
-                        function onAuthChanged(authWidgetState) {
-                            if(getPath(authWidgetState, 'session')) {
-                                authenticateWidget.dispose();
-                                subject$.next({session: authWidgetState.session});
+                        function onAuthChanged(authenticatePerspectiveState) {
+                            if(getPath(authenticatePerspectiveState, 'session')) {
+                                authenticatePerspectiveState.dispose();
+                                subject$.next({session: authenticatePerspectiveState.session});
                             }
                         }
                     );

@@ -12,10 +12,10 @@ const patch = require('snabbdom').init([
     require('snabbdom/modules/eventlisteners'),
     require('snabbdom/modules/dataset')
 ]);
-const lSUtils = require('./../../utils/objects').localStorage;
+const lSUtils = require('./../../../utils/objects').localStorage;
 const lSPath = 'constructorWidget';
 const initialState = {
-    
+
 };
 const render = function render(subject$, state) {
     return h('div', []);

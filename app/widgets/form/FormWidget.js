@@ -2,16 +2,15 @@
  * Created by nickbespalov on 10.07.16.
  */
 'use strict';
-require('./../styles/index.scss');
+require('./styles/fromWidget.scss');
 
 const Observable = require('rxjs/rx').Observable;
 const Subject = require('rxjs/rx').Subject;
 const h = require('snabbdom/h');
-const getJSON$ = require('./../../utils/XHR').getJSON$;
+const getJSON$ = require('./../../../utils/XHR').getJSON$;
 const extend = require('extend');
-const getPath = require('./../../utils/objects').getPath;
-const lSUtils = require('./../../utils/objects').localStorage;
-const lSPath = 'authenticateWidgetState';
+const getPath = require('./../../../utils/objects').getPath;
+
 const patch = require('snabbdom').init([
     require('snabbdom/modules/class'),
     require('snabbdom/modules/props'),
@@ -22,12 +21,7 @@ const patch = require('snabbdom').init([
 ]);
 const formFieldsHandlers = {text: textFieldHandler, email: textFieldHandler, password: textFieldHandler};
 
-const initialState = {
-    session: null,
-    signIn: {},
-    signUp: {},
-    currentFormType: 'signIn'
-};
+
 
 function textFieldHandler(e) {
     let result = {};
@@ -136,47 +130,12 @@ function renderSignUpBody(subject$, state) {
 //         );
 // }
 
-function render(subject$, state) {
-    return h('div', {class: {container: true, modal: true}}, [
-        h('form', {
-            class: {
-                'sign-in': getPath(state, 'currentFormType') === 'signIn',
-                'sign-up': state.currentFormType === 'signUp'
-            },
-            props: {name: getPath(state, 'currentFormType')},
-            on: {
-                submit: function onAuthSubmit (e) {
-                    e.preventDefault();
-                    auth(subject$, state);
-                    return false;
-                }
-            }
-        }, [
-            h('div', {class: {header: true}}, [
-                getPath(state, 'currentFormType') === 'signIn' ? 'Sign In' : 'Sign Up',
-                h('div', {class: {'form-type-toggle': true, row: true}}, [
-                    'or you can',
-                    h('div', {
-                        class: {'change-form-type': true}, on: {
-                            click: function onClickChangeType() {
-                                subject$.next({currentFormType: getPath(state, 'currentFormType') === 'signIn' ? 'signUp' : 'signIn'});
-                            }
-                        }
-                    }, [getPath(state, 'currentFormType') === 'signIn' ? 'Sign Up' : 'Sign In'])
-                ])
-            ]),
-            h('div', {class: {body: true}}, getPath(state, 'currentFormType') === 'signIn' ? renderSignInBody(subject$, state) : renderSignUpBody(subject$, state)),
-            h('div', {class: {messages: true}}, [getPath(state, 'error.message') || '']),
-            h('div', {class: {operations: true}}, [
-                h('input', {props: {type: 'submit'}})
-            ])
-        ])
-    ]);
-}
 
-const AuthenticateWidget = module.exports = function AuthenticateWidget($container) {
+
+const FormWidget = module.exports = function AuthenticateWidget($container, initialState) {
+    const defaultState = {};
     const subject$ = new Subject();
-    const currentState = lSUtils.get(lSPath) || initialState;
+    const currentState = initialState || defaultState;
     const onChange$ = Observable.fromEvent($container, 'change').map(handleFromEventValue); //.takeUntil(Rx.Observable.timer(5000))
     const onPaste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
     const onKeyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
@@ -192,6 +151,7 @@ const AuthenticateWidget = module.exports = function AuthenticateWidget($contain
             lSUtils.set(lSPath, currentState);
             return currentState;
         });
+    
     this.state$ = this.state.subscribe(function processStateChanges (state) {
         if (tree) {
             tree = patch(tree, render(subject$, state));
@@ -201,10 +161,22 @@ const AuthenticateWidget = module.exports = function AuthenticateWidget($contain
     }, function() {}, function(){$container.innerHTML = ''});
 };
 
-AuthenticateWidget.prototype = {
+FormWidget.prototype = {
     dispose: function AuthenticateWidgetDisposal () {
-        lSUtils.remove(lSPath);
         this.state$.complete();
         this.formChanges$.complete();
+    },
+    render:function render(subject$, state) {
+        return h('form', {
+            class: {},
+            props: {name: getPath(state, 'currentFormType')},
+            on: {
+                submit: function onAuthSubmit (e) {
+                    e.preventDefault();
+                    auth(subject$, state);
+                    return false;
+                }
+            }
+        });
     }
 };
