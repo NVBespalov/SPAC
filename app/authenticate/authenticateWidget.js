@@ -176,7 +176,7 @@ function render(subject$, state) {
 const AuthenticateWidget = module.exports = function AuthenticateWidget($container) {
     const subject$ = new Subject();
     const currentState = localStorage.getItem('authenticateWidgetState') && JSON.parse(localStorage.getItem('authenticateWidgetState')) || initialState;
-    this.change$ = Observable.fromEvent($container, 'change').map(handleFromEventValue);
+    this.change$ = Observable.fromEvent($container, 'change').map(handleFromEventValue); //.takeUntil(Rx.Observable.timer(5000))
     this.paste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
     this.keyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
 
