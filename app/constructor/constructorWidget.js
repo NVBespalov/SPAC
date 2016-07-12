@@ -12,28 +12,26 @@ const patch = require('snabbdom').init([
     require('snabbdom/modules/eventlisteners'),
     require('snabbdom/modules/dataset')
 ]);
+const lSUtils = require('./../../utils/objects').localStorage;
+const lSPath = 'constructorWidget';
 const initialState = {
-
+    
 };
-function render(subject$, state) {
-    return h('div', [
-        h('')
-    ]);
-}
+const render = function render(subject$, state) {
+    return h('div', []);
+};
 const ConstructorWidget = module.exports = function ($container) {
-    debugger
     const subject$ = new Subject();
-    const currentState = localStorage.getItem('constructorWidgetState') && JSON.parse(localStorage.getItem('constructorWidgetState')) || initialState;
+    const currentState = lSUtils.get(lSPath) || initialState;
     let tree;
-    this.state$ = subject$
+    this.state = subject$
         .startWith(currentState)
         .scan(function processNextState (prev, next) {
             const currentState = extend(true, {}, prev, next);
-            localStorage.setItem('constructorWidgetState', JSON.stringify(currentState));
+            lSUtils.set(lSPath, currentState);
             return currentState;
         });
-
-    this.state$.subscribe(function processStateChanges (state) {
+    this.state$ = this.state.subscribe(function processStateChanges (state) {
         if (tree) {
             tree = patch(tree, render(subject$, state));
         } else {
@@ -43,6 +41,7 @@ const ConstructorWidget = module.exports = function ($container) {
 };
 ConstructorWidget.prototype = {
     dispose: function ConstructorWidgetDisposal () {
-        localStorage.removeItem('constructorWidgetState');
+        lSUtils.remove(lSPath);
+        this.state$.complete();
     }
 };

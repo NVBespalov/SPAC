@@ -18,7 +18,20 @@ const getPath = (obj, path) => {
     while ((obj = obj[keys[i++]]) != null && i < n) {}
     return i < n ? void 0 : obj;
 };
-
+function getFromLocalStorage(key) {
+    return localStorage.getItem(key) && JSON.parse(localStorage.getItem(key));
+}
+function setToLocalStorage(key, value) {
+    return localStorage.setItem(key, JSON.stringify(value));
+}
+function removeFromLocalStorage(key) {
+    return localStorage.removeItem(key);
+}
 module.exports = {
-    getPath:getPath
+    getPath:getPath,
+    localStorage: {
+        get: getFromLocalStorage,
+        set:setToLocalStorage,
+        remove: removeFromLocalStorage
+    }
 };

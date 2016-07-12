@@ -10,6 +10,8 @@ const h = require('snabbdom/h');
 const getJSON$ = require('./../../utils/XHR').getJSON$;
 const extend = require('extend');
 const getPath = require('./../../utils/objects').getPath;
+const lSUtils = require('./../../utils/objects').localStorage;
+const lSPath = 'authenticateWidgetState';
 const patch = require('snabbdom').init([
     require('snabbdom/modules/class'),
     require('snabbdom/modules/props'),
@@ -46,7 +48,6 @@ function auth(subject$, state) {
         data: getPath(state, getPath(state, 'currentFormType'))
     })
         .subscribe(function onAuthSuccess(r) {
-            debugger
             getPath(state, 'currentFormType') === 'signIn' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'signIn'});
         }, function onAuthError(r) {
             subject$.next({error: r})
@@ -175,39 +176,35 @@ function render(subject$, state) {
 
 const AuthenticateWidget = module.exports = function AuthenticateWidget($container) {
     const subject$ = new Subject();
-    const currentState = localStorage.getItem('authenticateWidgetState') && JSON.parse(localStorage.getItem('authenticateWidgetState')) || initialState;
-    this.change$ = Observable.fromEvent($container, 'change').map(handleFromEventValue); //.takeUntil(Rx.Observable.timer(5000))
-    this.paste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
-    this.keyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
+    const currentState = lSUtils.get(lSPath) || initialState;
+    const onChange$ = Observable.fromEvent($container, 'change').map(handleFromEventValue); //.takeUntil(Rx.Observable.timer(5000))
+    const onPaste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
+    const onKeyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
 
     let tree;
 
-    this.formChanges$ = Observable.merge(this.change$, this.paste$, this.keyup$);
+    this.formChanges$ = Observable.merge(onChange$, onPaste$, onKeyup$).subscribe(subject$.next.bind(subject$));
 
-    this.formChanges$.subscribe(subject$.next.bind(subject$));
-
-    this.state$ = subject$
+    this.state = subject$
         .startWith(currentState)
         .scan(function processNextState (prev, next) {
             const currentState = extend(true, {}, prev, next);
-            localStorage.setItem('authenticateWidgetState', JSON.stringify(currentState));
+            lSUtils.set(lSPath, currentState);
             return currentState;
         });
-    this.state$.subscribe(function processStateChanges (state) {
+    this.state$ = this.state.subscribe(function processStateChanges (state) {
         if (tree) {
             tree = patch(tree, render(subject$, state));
         } else {
             tree = patch($container, render(subject$, state));
         }
-    });
+    }, function() {}, function(){$container.innerHTML = ''});
 };
+
 AuthenticateWidget.prototype = {
     dispose: function AuthenticateWidgetDisposal () {
-        localStorage.removeItem('authenticateWidgetState');
-        this.formChanges$ = void 0;
-        this.change$ = void 0;
-        this.paste$ = void 0;
-        this.keyup$ = void 0;
-        this.state$ = void 0;
+        lSUtils.remove(lSPath);
+        this.state$.complete();
+        this.formChanges$.complete();
     }
 };
