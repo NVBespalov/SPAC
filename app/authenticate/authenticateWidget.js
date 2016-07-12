@@ -7,7 +7,7 @@ require('./../styles/index.scss');
 const Observable = require('rxjs/rx').Observable;
 const Subject = require('rxjs/rx').Subject;
 const h = require('snabbdom/h');
-const xhr = require('./../../utils/XHR').xhr;
+const getJSON$ = require('./../../utils/XHR').getJSON$;
 const extend = require('extend');
 const getPath = require('./../../utils/objects').getPath;
 const patch = require('snabbdom').init([
@@ -40,11 +40,11 @@ function handleFromEventValue(e) {
 }
 
 function auth(subject$, state) {
-    Observable.fromPromise(xhr({
+    getJSON$({
         url: `/auth/${getPath(state, 'currentFormType') === 'signIn' ? 'signin' : 'signup'}`,
         method: 'POST',
         data: getPath(state, getPath(state, 'currentFormType'))
-    }))
+    })
         .subscribe(function onAuthSuccess(r) {
             debugger
             getPath(state, 'currentFormType') === 'signIn' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'signIn'});
