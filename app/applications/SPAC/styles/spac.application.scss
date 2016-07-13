@@ -1,0 +1,19 @@
+$FontPath: "./../../../fonts" !default;
+$FontName: "Roboto" !default;
+$FontVersion: "1.1.0" !default;
+
+@mixin fontdef-woff($FontPath, $FontName, $FontVersion:'1.0.0', $FontType:'Regular') {
+  src: url('#{$FontPath}/#{$FontName}/#{$FontType}/#{$FontName}#{$FontType}.woff?v=#{$FontVersion}') format('woff'),
+  url('#{$FontPath}/#{$FontName}/#{$FontType}/#{$FontName}#{$FontType}.ttf?v=#{$FontVersion}') format('truetype');
+}
+
+@font-face {
+  font-family: RobotoLight;
+  @include fontdef-woff($FontPath, $FontName, $FontVersion, 'Light');
+  font-weight: 300;
+  font-style: normal;
+}
+body {
+  margin: 0;
+  font-family: RobotoLight, Arial, serif;
+}

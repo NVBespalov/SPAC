@@ -1,54 +1,83 @@
-//form {
-//  display: flex;
-//  flex-direction: column;
-//  align-items: stretch;
-//  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-//  > .header {
-//    background-color: #FFFFFF;
-//    align-items: baseline;
-//    justify-content: space-between;
-//    padding-left: 30px;
-//    color: #303030;
-//    font-size: 20px;
-//    font-weight: bold;
-//    .form-type-toggle {
-//      color: #888888;
-//      > .change-form-type {
-//        margin-left: 9px;
-//        color: #2869A9;
-//        cursor: pointer;
-//      }
-//    }
-//  }
-//  > .body {
-//    display: flex;
-//    flex-direction: column;
-//    padding-left: 25px;
-//    padding-right: 25px;
-//  }
-//  > .operations {
-//    justify-content: center;
-//    margin-bottom: 15px;
-//    margin-top: 0;
-//    > [type=submit] {
-//      border: 0;
-//      color: #2D689B;
-//      font-weight: bold;
-//      font-size: 19px;
-//      background-color: transparent;
-//      cursor: pointer;
-//      padding: 8px;
-//      &:hover {
-//        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-//      }
-//    }
-//  }
-//  > .messages {
-//    display: flex;
-//    flex-direction: row;
-//    flex-wrap: wrap;
-//    align-items: center;
-//    justify-content: center;
-//    color: red;
-//  }
-//}
+form {
+  display: flex;
+  flex-direction: column;
+  .form-group {
+    position:relative;
+    margin-bottom:45px;
+    font-size: 24px;
+    > input {
+      border: 0;
+      font-size: inherit;
+      border-bottom: 1px solid #333333;
+      display: block;
+      width: 100%;
+      &:focus {
+        outline: none;
+      }
+      &:focus ~ label, &.has-value ~ label {
+        top: -23px;
+        font-size: 14px;
+        left:0;
+        color: #3399cc;
+      }
+      &:focus ~ .bar:before, &:focus ~ .bar:after {
+        width: 50%;
+      }
+    }
+    > label {
+      color:#999;
+      font-size:inherit;
+      font-weight:normal;
+      position:absolute;
+      pointer-events:none;
+      left:5px;
+      top:-4px;
+      transition:0.2s ease all;
+    }
+    > .bar {
+      position: relative;
+      display: block;
+      &:before, &:after {
+        content: '';
+        height: 2px;
+        width: 0;
+        bottom: 1px;
+        position: absolute;
+        background: #5264AE;
+        transition: 0.2s ease all;
+      }
+      &:before {
+        left: 50%;
+      }
+      &:after {
+        right: 50%;
+      }
+    }
+  }
+
+  > .operations {
+    justify-content: center;
+    margin-bottom: 15px;
+    margin-top: 0;
+    > [type=submit] {
+      border: 0;
+      color: #2D689B;
+      font-weight: bold;
+      font-size: 19px;
+      background-color: transparent;
+      cursor: pointer;
+      padding: 8px;
+      &:hover {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+      }
+    }
+  }
+  > .messages {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    color: red;
+  }
+}

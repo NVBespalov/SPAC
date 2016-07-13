@@ -1,6 +1,6 @@
 'use strict';
 const Observable = require('rxjs/rx').Observable;
-const Application = require('./Application');
+const Application = require('./applications/SPAC/SPACApplication.js');
 
 Observable.fromEvent(document, 'DOMContentLoaded')
     .map(e=> e.target.body.appendChild(document.createElement('div')))

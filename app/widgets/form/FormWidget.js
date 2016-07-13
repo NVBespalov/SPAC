@@ -24,36 +24,24 @@ const formFieldsHandlers = {text: textFieldHandler, email: textFieldHandler, pas
 
 
 function textFieldHandler(e) {
-    let result = {};
     let fieldResult = {};
     fieldResult[e.target.name] = e.target.value;
-    result[e.target.closest('form').name] = fieldResult;
-    return result;
+    fieldResult[e.target.name] = e.target.value;
+    return fieldResult;
 }
 
 function handleFromEventValue(e) {
     return formFieldsHandlers[e.target.type](e);
 }
 
-function auth(subject$, state) {
-    getJSON$({
-        url: `/auth/${getPath(state, 'currentFormType') === 'signIn' ? 'signin' : 'signup'}`,
-        method: 'POST',
-        data: getPath(state, getPath(state, 'currentFormType'))
-    })
-        .subscribe(function onAuthSuccess(r) {
-            getPath(state, 'currentFormType') === 'signIn' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'signIn'});
-        }, function onAuthError(r) {
-            subject$.next({error: r})
-        });
-}
+
 
 function renderSignInBody(subject$, state) {
     return [
         h('div', {class: {'form-group': true}}, [
             h('input', {
-                class: {'has-value': getPath(state, 'signIn.email') ? true : false},
-                props: {required: true, name: 'email', type: 'text', value: getPath(state, 'signIn.email') || ''}
+                class: {'has-value': getPath(state, 'auth.email') ? true : false},
+                props: {required: true, name: 'email', type: 'text', value: getPath(state, 'auth.email') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -61,8 +49,8 @@ function renderSignInBody(subject$, state) {
         ]),
         h('div', {class: {'form-group': true}}, [
             h('input', {
-                class: {'has-value': getPath(state, 'signIn.password') ? true : false},
-                props: {required: true, name: 'password', type: 'password', value: getPath(state, 'signIn.password') || ''}
+                class: {'has-value': getPath(state, 'auth.password') ? true : false},
+                props: {required: true, name: 'password', type: 'password', value: getPath(state, 'auth.password') || ''}
             }),
             h('span', {class: {highlight: true}}),
             h('span', {class: {bar: true}}),
@@ -129,26 +117,43 @@ function renderSignUpBody(subject$, state) {
 //             function onAuthError() {debugger}
 //         );
 // }
-
-const render = function render (subject$, state) {
+const renderTextInputElm = function renderTextInputElm(data, key) {
+    return  h('div', {class: {'form-group': true}}, [
+        h('input', {
+            class: {'has-value': data ? true : false},
+            props: {required: true, name: key, type: 'text', value: data || ''}
+        }),
+        h('span', {class: {highlight: true}}),
+        h('span', {class: {bar: true}}),
+        h('label', [key])
+    ])
+};
+const renderFormElm = function renderFormElement (state, key) {
+    var elmValue = getPath(state, key);
+    return typeof elmValue === 'string' || elmValue === null ? renderTextInputElm(elmValue, key) : ''
+};
+const render = function renderForm (subject$, state, overrides) {
     return h('form', {
         class: {},
         on: {
-            submit: function onAuthSubmit (e) {
-                e.preventDefault();
-                auth(subject$, state);
-                return false;
+            submit: function (e) {
+                if(getPath(overrides, 'onSubmit')) {
+                    e.preventDefault();
+                    getPath(overrides, 'onSubmit')(subject$, state)
+                }
             }
         }
-    });
-}
+    },
+        Object.keys(state).map(renderFormElm.bind(null, state)).concat([h('div.operations', [h('input', {props: {type:'submit'}})])])
+    );
+};
 
-const FormWidget = module.exports = function AuthenticateWidget($container, initialState) {
+const FormWidget = module.exports = function AuthenticateWidget($container, initialState, overrides) {
     const defaultState = {};
     const subject$ = new Subject();
 
     const currentState = initialState || defaultState;
-    const onChange$ = Observable.fromEvent($container, 'change').map(handleFromEventValue); //.takeUntil(Rx.Observable.timer(5000))
+    const onChange$ = Observable.fromEvent($container, 'change').map(handleFromEventValue);
     const onPaste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
     const onKeyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
 
@@ -164,9 +169,9 @@ const FormWidget = module.exports = function AuthenticateWidget($container, init
     
     this.state$ = this.state.subscribe(function processStateChanges (state) {
         if (tree) {
-            tree = patch(tree, render(this, state));
+            tree = patch(tree, render(this, state, overrides));
         } else {
-            tree = patch($container, render(this, state));
+            tree = patch($container, render(this, state, overrides));
         }
     }, function() {}, function(){$container.innerHTML = ''});
 };

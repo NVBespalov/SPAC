@@ -2,12 +2,13 @@
  * Created by nickbespalov on 12.07.16.
  */
 const Subject = require('rxjs/rx').Subject;
-const ConstructorPerspective = require('./scenes/constructor/ConstructorScene');
-const AuthenticatePerspective = require('./scenes/authenticate/AuthenticateScene');
+const ConstructorPerspective = require('./../../scenes/constructor/ConstructorScene');
+const AuthenticatePerspective = require('./../../scenes/authenticate/AuthenticateScene');
 const extend = require('extend');
-const getPath = require('./../utils/objects').getPath;
-const lSUtils = require('./../utils/objects').localStorage;
+const getPath = require('./../../../utils/objects').getPath;
+const lSUtils = require('./../../../utils/objects').localStorage;
 const lSPath = 'index';
+require('./styles/spac.application.scss');
 const initialState = {
     session: null
 };
@@ -29,6 +30,7 @@ const ApplicationConstructor = module.exports = function ApplicationConstructor 
                     debugger;
                 });
             } else {
+                debugger
                 const authenticatePerspective = new AuthenticatePerspective($container);
                 authenticatePerspective.state
                     .subscribe(
