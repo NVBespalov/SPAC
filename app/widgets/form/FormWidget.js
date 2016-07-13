@@ -172,7 +172,7 @@ const AuthenticateWidget = module.exports = function AuthenticateWidget($contain
         } else {
             ctx.tree = patch($container, render(this, state, overrides));
         }
-    }, function() {}, function(){});
+    });
 };
 
 AuthenticateWidget.prototype = {

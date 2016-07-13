@@ -97,11 +97,7 @@ const AuthenticatePerspective = module.exports = function AuthenticatePerspectiv
             tree = patch(tree, render(subject$, state, form));
         } else {
             tree = patch($container, render(subject$, state, form));
-        }
-    }, function () {
-    }, function () {
-        tree.elm.innerHTML = '';
-    });
+        }});
 };
 AuthenticatePerspective.prototype = {
     dispose: function disposeAuthenticatePerspective() {
