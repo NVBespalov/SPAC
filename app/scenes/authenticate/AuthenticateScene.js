@@ -19,23 +19,24 @@ const patch = require('snabbdom').init([
     require('snabbdom/modules/eventlisteners'),
     require('snabbdom/modules/dataset')
 ]);
-const renderMainLayout = function renderAuthenticateSceneLayout (subject$, state) {
+const render = function renderAuthenticateScene(subject$, state, form) {
+    debugger
     return h('div.authenticate-scene', [
         h('div.container', [
             h('div', {class: {header: true}}, [
-                h('div.current-form-name', [getPath(state, 'currentForm') === 'auth' ? 'Sign In' : 'Sign Up']),
+                h('div.current-form-name', [getPath(state, 'currentForm') === 'signInForm' ? 'Sign In' : 'Sign Up']),
                 h('div', {class: {'form-type-toggle': true}}, [
                     'or you can',
                     h('div', {
                         class: {'change-form-type': true}, on: {
                             click: function onClickChangeType() {
-                                subject$.next({currentFormType: getPath(state, 'currentForm') === 'auth' ? 'signUp' : 'auth'});
+                                subject$.next({currentForm: getPath(state, 'currentForm') === 'signInForm' ? 'signUpForm' : 'signInForm'});
                             }
                         }
-                    }, [getPath(state, 'currentForm') === 'auth' ? 'Sign Up' : 'Sign In'])
+                    }, [getPath(state, 'currentForm') === 'signInForm' ? 'Sign Up' : 'Sign In'])
                 ])
             ]),
-            h('form')
+            form.tree
         ])
     ]);
 };
@@ -52,8 +53,8 @@ const signInSignUp = function signInSignUp(subject$, state) {
         });
 };
 
-const getCurrentForm = function getCurrentForm(currentState) {
-    return getPath(currentState, 'currentForm') === 'auth' ? getPath(currentState, 'signInForm') : getPath(currentState, 'signInForm');
+const getCurrentFormState = function getCurrentForm(currentState) {
+    return getPath(currentState, getPath(currentState, 'currentForm'));
 };
 const getCurrentState = function getCurrentState(initialState) {
     const defaultState = {
@@ -73,33 +74,38 @@ const getCurrentState = function getCurrentState(initialState) {
     const localState = lSUtils.get(lSPath);
     return extend(true, {}, defaultState, localState, initialState);
 };
-const AuthenticatePerspective = module.exports = function AuthenticatePerspective ($container, initialState) {
+const AuthenticatePerspective = module.exports = function AuthenticatePerspective($container, initialState) {
+    const ctx = this;
     const subject$ = new Subject();
-    var currentState = getCurrentState(initialState);
-    let tree = patch($container, renderMainLayout(currentState));
-
-    let form = new FormWidget(tree.elm.querySelector('form'), getCurrentForm(currentState),{onSubmit:signInSignUp});
-
+    const currentState = getCurrentState(initialState);
+    let form = new FormWidget(document.createElement('form'), getCurrentFormState(currentState), {onSubmit: signInSignUp});
+    let tree;
     this.state = subject$
         .startWith(currentState)
-        .scan(function processNextState (prev, next) {
+        .scan(function mergeStates(prev, next) {
             const currentState = getCurrentState(next);
+            if (getPath(prev, 'currentForm') !== getPath(next, 'currentForm')) {
+                form.dispose();
+                form = new FormWidget(document.createElement('form'), getCurrentFormState(currentState), {onSubmit: signInSignUp});
+            }
             lSUtils.set(lSPath, currentState);
             return currentState;
         });
 
-    this.state$ = this.state.subscribe(function processStateChanges (state) {
+    this.state$ = this.state.subscribe(function processStateChanges(state) {
         if (tree) {
-            debugger
-            // ctx.tree = patch(ctx.tree, ctx.render(subject$, state));
+            tree = patch(tree, render(subject$, state, form));
         } else {
-            debugger
+            tree = patch($container, render(subject$, state, form));
         }
-    }, function() {}, function(){$container.innerHTML = ''});
+    }, function () {
+    }, function () {
+        tree.elm.innerHTML = '';
+    });
 };
 AuthenticatePerspective.prototype = {
-    dispose: function disposeAuthenticatePerspective () {
-
+    dispose: function disposeAuthenticatePerspective() {
+        this.state$.complete();
     }
 
 };

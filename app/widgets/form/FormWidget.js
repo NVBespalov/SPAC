@@ -148,18 +148,17 @@ const render = function renderForm (subject$, state, overrides) {
     );
 };
 
-const FormWidget = module.exports = function AuthenticateWidget($container, initialState, overrides) {
+const AuthenticateWidget = module.exports = function AuthenticateWidget($container, initialState, overrides) {
     const defaultState = {};
     const subject$ = new Subject();
-
+    const ctx = this;
     const currentState = initialState || defaultState;
     const onChange$ = Observable.fromEvent($container, 'change').map(handleFromEventValue);
     const onPaste$ = Observable.fromEvent($container, 'paste').map(handleFromEventValue);
     const onKeyup$ = Observable.fromEvent($container, 'keyup').map(handleFromEventValue);
 
-    let tree;
 
-    this.formChanges$ = Observable.merge(onChange$, onPaste$, onKeyup$).subscribe(subject$.next.bind(subject$));
+    this.formChanges$ = Observable.merge(onChange$, onPaste$, onKeyup$).subscribe(subject$.next.bind(subject$), function() {}, function(){debugger});
 
     this.state = subject$
         .startWith(currentState)
@@ -168,16 +167,17 @@ const FormWidget = module.exports = function AuthenticateWidget($container, init
         });
     
     this.state$ = this.state.subscribe(function processStateChanges (state) {
-        if (tree) {
-            tree = patch(tree, render(this, state, overrides));
+        if (getPath(ctx, 'tree')) {
+            ctx.tree = patch(ctx.tree, render(this, state, overrides));
         } else {
-            tree = patch($container, render(this, state, overrides));
+            ctx.tree = patch($container, render(this, state, overrides));
         }
-    }, function() {}, function(){$container.innerHTML = ''});
+    }, function() {}, function(){});
 };
 
-FormWidget.prototype = {
+AuthenticateWidget.prototype = {
     dispose: function AuthenticateWidgetDisposal () {
+        debugger
         this.state$.complete();
         this.formChanges$.complete();
     }
