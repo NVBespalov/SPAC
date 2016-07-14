@@ -2,9 +2,8 @@
  * Created by nickbespalov on 12.07.16.
  */
 require('./styles/authnticate.scss');
-const Observable = require('rxjs/rx').Observable;
 const Subject = require('rxjs/rx').Subject;
-const FormWidget = require('./../../widgets/form/FormWidget');
+const form = require('./../../widgets/form/materialForm/MaterialFormTemplate');
 const h = require('snabbdom/h');
 const getJSON$ = require('./../../../utils/XHR').getJSON$;
 const extend = require('extend');
@@ -19,8 +18,32 @@ const patch = require('snabbdom').init([
     require('snabbdom/modules/eventlisteners'),
     require('snabbdom/modules/dataset')
 ]);
-const render = function renderAuthenticateScene(subject$, state, form) {
-    debugger
+
+
+const render = function renderAuthenticateScene(subject$, state) {
+    
+    function textFieldHandler(e) {
+        let currentForm = getCurrentStateForm(state);
+        let nextState = {};
+        currentForm[e.target.name] = e.target.value;
+        currentForm[e.target.name] = e.target.value;
+        nextState[getPath(state, 'currentForm')] = currentForm;
+        subject$.next(nextState);
+    }
+    function signInOrSignUp(e) {
+        e.preventDefault();
+        getJSON$({
+            url: `/auth/${getPath(state, 'currentForm') === 'signInForm' ? 'signin' : 'signup'}`,
+            method: 'POST',
+            data: getPath(state, getPath(state, 'currentForm'))
+        })
+            .subscribe(function onAuthSuccess(r) {
+                debugger
+                getPath(state, 'currentForm') === 'signInForm' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'auth'});
+            }, function onAuthError(r) {
+                subject$.next({error: r});
+            });
+    }
     return h('div.authenticate-scene', [
         h('div.container', [
             h('div', {class: {header: true}}, [
@@ -36,24 +59,28 @@ const render = function renderAuthenticateScene(subject$, state, form) {
                     }, [getPath(state, 'currentForm') === 'signInForm' ? 'Sign Up' : 'Sign In'])
                 ])
             ]),
-            form.tree
+            form(getCurrentStateForm(state), {
+                form: {
+                    on: {submit: signInOrSignUp},
+                    props: {name: getPath(state, 'currentForm')}
+                },
+                formFieldsHandlers: {text: textFieldHandler}
+            })
         ])
     ]);
 };
-const signInSignUp = function signInSignUp(subject$, state) {
-    getJSON$({
-        url: `/auth/${getPath(state, 'currentForm') === 'auth' ? 'signin' : 'signup'}`,
-        method: 'POST',
-        data: getPath(state, getPath(state, 'currentForm'))
-    })
-        .subscribe(function onAuthSuccess(r) {
-            getPath(state, 'currentForm') === 'auth' ? subject$.next({session: r.data}) : subject$.next({currentFormType: 'auth'});
-        }, function onAuthError(r) {
-            subject$.next({error: r})
-        });
-};
+// function signOut(subject$, state) {
+//     Observable.fromPromise(xhr({
+//         url: `/auth/signout`,
+//         method: 'POST'
+//     }))
+//         .subscribe(
+//             function onAuthSignOutSuccess() {subject$.next({session: null});},
+//             function onAuthError() {debugger}
+//         );
+// }
 
-const getCurrentFormState = function getCurrentForm(currentState) {
+const getCurrentStateForm = function getCurrentForm(currentState) {
     return getPath(currentState, getPath(currentState, 'currentForm'));
 };
 const getCurrentState = function getCurrentState(initialState) {
@@ -64,7 +91,7 @@ const getCurrentState = function getCurrentState(initialState) {
         },
         signUpForm: {
             firstName: null,
-            LastName: null,
+            lastName: null,
             displayName: null,
             email: null,
             password: null
@@ -74,33 +101,29 @@ const getCurrentState = function getCurrentState(initialState) {
     const localState = lSUtils.get(lSPath);
     return extend(true, {}, defaultState, localState, initialState);
 };
-const AuthenticatePerspective = module.exports = function AuthenticatePerspective($container, initialState) {
-    const ctx = this;
-    const subject$ = new Subject();
+
+const AuthenticateScene = module.exports = function AuthenticateScene($container, initialState) {
+    const subject = new Subject();
     const currentState = getCurrentState(initialState);
-    let form = new FormWidget(document.createElement('form'), getCurrentFormState(currentState), {onSubmit: signInSignUp});
     let tree;
-    this.state = subject$
+    this.state = subject
         .startWith(currentState)
         .scan(function mergeStates(prev, next) {
             const currentState = getCurrentState(next);
-            if (getPath(prev, 'currentForm') !== getPath(next, 'currentForm')) {
-                form.dispose();
-                form = new FormWidget(document.createElement('form'), getCurrentFormState(currentState), {onSubmit: signInSignUp});
-            }
             lSUtils.set(lSPath, currentState);
             return currentState;
         });
 
     this.state$ = this.state.subscribe(function processStateChanges(state) {
         if (tree) {
-            tree = patch(tree, render(subject$, state, form));
+            tree = patch(tree, render(subject, state));
         } else {
-            tree = patch($container, render(subject$, state, form));
-        }});
+            tree = patch($container, render(subject, state));
+        }
+    });
 };
-AuthenticatePerspective.prototype = {
-    dispose: function disposeAuthenticatePerspective() {
+AuthenticateScene.prototype = {
+    dispose: function AuthenticateSceneDisposal() {
         this.state$.complete();
     }
 

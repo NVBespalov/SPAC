@@ -4,6 +4,12 @@
     "httpPort": 4000,
     "httpsPort": 3443
   },
+  "dbConfig": {
+    "host": "localhost",
+    "port": 27017,
+    "dbName": "SPAC-prod",
+    "options": {}
+  },
   "logger": {
     "level": "info",
     "json": false,

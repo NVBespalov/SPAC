@@ -33,7 +33,6 @@ const makeSalt = () => crypto.randomBytes(256).toString('hex');
 
 const unique = true
     , trim = true
-    , required = true
     , stripHtmlTags = true
     , lowercase = true;
 
@@ -41,16 +40,14 @@ const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         trim,
-        required,
-        stripHtmlTags,
-        validate: [validateProperty, 'Please fill in your first name']
+        required: [true, 'Please fill in your first name'],
+        stripHtmlTags
     },
     lastName: {
         type: String,
         trim,
-        required,
-        stripHtmlTags,
-        validate: [validateProperty, 'Please fill in your last name']
+        required: [true, 'Please fill in your last name'],
+        stripHtmlTags
     },
     displayName: {
         type: String,
@@ -62,9 +59,8 @@ const userSchema = new mongoose.Schema({
         stripHtmlTags,
         trim,
         unique,
-        required,
-        lowercase,
-        validate: [validateProperty, 'Please fill in your email']
+        required: [true, 'Please fill in your email'],
+        lowercase
     },
     salt: {
         type: String,

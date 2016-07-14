@@ -3,7 +3,7 @@
  */
 const Subject = require('rxjs/rx').Subject;
 const ConstructorPerspective = require('./../../scenes/constructor/ConstructorScene');
-const AuthenticatePerspective = require('./../../scenes/authenticate/AuthenticateScene');
+const AuthenticateScene = require('./../../scenes/authenticate/AuthenticateScene');
 const extend = require('extend');
 const getPath = require('./../../../utils/objects').getPath;
 const lSUtils = require('./../../../utils/objects').localStorage;
@@ -30,14 +30,14 @@ const ApplicationConstructor = module.exports = function ApplicationConstructor 
                     debugger;
                 });
             } else {
-                debugger
-                const authenticatePerspective = new AuthenticatePerspective($container);
-                authenticatePerspective.state
+                const authenticateScene = new AuthenticateScene($container);
+                authenticateScene.state
                     .subscribe(
-                        function onAuthChanged(authenticatePerspectiveState) {
-                            if(getPath(authenticatePerspectiveState, 'session')) {
-                                authenticatePerspectiveState.dispose();
-                                subject$.next({session: authenticatePerspectiveState.session});
+                        function onAuthChanged(authenticateSceneState) {
+                            if(getPath(authenticateSceneState, 'session')) {
+                                debugger
+                                authenticateSceneState.dispose();
+                                subject$.next({session: authenticateSceneState.session});
                             }
                         }
                     );

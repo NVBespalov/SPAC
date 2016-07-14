@@ -7,14 +7,8 @@
   "dbConfig": {
     "host": "localhost",
     "port": 27017,
-    "dbName": "platform-dev",
-    "options": {
-      //db: { native_parser: true },
-      //server: { poolSize: 5 },
-      //replset: { rs_name: 'myReplicaSetName' },
-      //user: 'myUserName',
-      //pass: 'myPassword'
-    }
+    "dbName": "SPAC-dev",
+    "options": {}
   },
   "logger": {
     "level": "info",
