@@ -21,7 +21,18 @@ const patch = require('snabbdom').init([
 
 
 const render = function renderAuthenticateScene(subject$, state) {
-    
+    function signOut(subject$, state) {
+        getJSON$({url: '/auth/signout', method: 'POST'})
+            .subscribe(
+                function onAuthSignOutSuccess() {
+                    subject$.next({session: null});
+                },
+                function onAuthError() {
+                    debugger
+                }
+            );
+    }
+
     function textFieldHandler(e) {
         let currentForm = getCurrentStateForm(state);
         let nextState = {};
@@ -30,6 +41,7 @@ const render = function renderAuthenticateScene(subject$, state) {
         nextState[getPath(state, 'currentForm')] = currentForm;
         subject$.next(nextState);
     }
+
     function signInOrSignUp(e) {
         e.preventDefault();
         getJSON$({
@@ -44,6 +56,7 @@ const render = function renderAuthenticateScene(subject$, state) {
                 subject$.next({error: r});
             });
     }
+
     return h('div.authenticate-scene', [
         h('div.container', [
             h('div', {class: {header: true}}, [
@@ -69,16 +82,7 @@ const render = function renderAuthenticateScene(subject$, state) {
         ])
     ]);
 };
-// function signOut(subject$, state) {
-//     Observable.fromPromise(xhr({
-//         url: `/auth/signout`,
-//         method: 'POST'
-//     }))
-//         .subscribe(
-//             function onAuthSignOutSuccess() {subject$.next({session: null});},
-//             function onAuthError() {debugger}
-//         );
-// }
+
 
 const getCurrentStateForm = function getCurrentForm(currentState) {
     return getPath(currentState, getPath(currentState, 'currentForm'));
