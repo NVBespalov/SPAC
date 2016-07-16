@@ -19,7 +19,7 @@ const patch = require('snabbdom').init([
 require('./styles/spac.application.scss');
 const initialState = {
     authenticate: {
-        session: null
+        session: {}
     }, 
     constructor: {}
 };

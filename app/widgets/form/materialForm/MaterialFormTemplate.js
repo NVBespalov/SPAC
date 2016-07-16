@@ -2,7 +2,7 @@
  * Created by nickbespalov on 10.07.16.
  */
 'use strict';
-require('./styles/materialForm.js.scss');
+require('./styles/materialForm.scss');
 
 const h = require('snabbdom/h');
 
