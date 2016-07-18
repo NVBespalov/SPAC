@@ -218,10 +218,11 @@ const attributes = {
     "autoplay": ["audio", "video"],
     "autosave": ["input"],
     "bgcolor": ["body", "col", "colgroup", "marquee", "table", "tbody", "tfoot", "td", "th", "tr"]
-}
+};
 require('./../../widgets/form/materialForm/styles/materialForm.scss');
 
 module.exports = function render(subject$, state) {
+
     function objectToH(o) {
         function arrayToH(map) {
             if (map && map.length === 0) return [];
@@ -235,11 +236,14 @@ module.exports = function render(subject$, state) {
 
     state.data = [
         {
-            id: 0,
-            firstName: 'firstName',
-            lastName: 'lastName',
-            displayName: 'displayName',
-            email: 'displayName@email.com'
+            desert: 'Frozen yogurt',
+            calories: 159,
+            fat: 6.0,
+            carbs: 24,
+            protein: 4.0,
+            sodium: 87,
+            calcium: '14%',
+            iron: '1%'
         },
         {
             id: 1,
@@ -249,26 +253,27 @@ module.exports = function render(subject$, state) {
             email: 'displayName1@email.com'
         }
     ];
+
     function keyToTh(key) {
-        return h('th', ['key']);
+        return h('th', [key]);
     }
 
     function makeTHChildrenFromDataObj(dataObj) {
         return h('tr', Object.keys(dataObj).map(keyToTh));
     }
 
-    function keyToTd(key) {
-        return h('td', [key]);
+    function objectKeyToTd(object, key) {
+        var value = getPath(object, key);
+        return h('td', {class:{text: typeof value === 'string', number: typeof value === 'number'}}, [value]);
     }
 
     function objectToTr(object) {
-        return h('tr', Object.keys(object).map(keyToTd));
+        return h('tr', Object.keys(object).map(objectKeyToTd.bind(null, object)));
     }
 
     function makeTBodyChildrenFromData(data) {
         return data.map(objectToTr);
     }
-
 
     function makeFormInputForDataKey(data, key) {
         const value = getPath(data, key);
@@ -287,22 +292,19 @@ module.exports = function render(subject$, state) {
         return h('form.materialForm', Object.keys(obj).map(makeFormInputForDataKey.bind(null, obj)))
     }
 
+    function makeTableFromData(data) {
+        return h('table.table-widget', [
+            h('thead', [makeTHChildrenFromDataObj(getPath(data, '[0]'))]),
+            h('tbody', makeTBodyChildrenFromData(data))
+        ])
+    }
+
     return h('div', {class: {'scene-constructor': true}}, [
-        h('div.Grid.Grid--gutters', {
-            style: {
-                border: '1px solid black',
-                height: '99.8vh'
-            }
-        }, [
+        h('div.Grid.Grid--gutters', {}, [
             h('div.Grid-cell.scene-preview', [
-                h('div.Grid-cell', [
-                    h('table', [
-                        h('thead', makeTHChildrenFromDataObj(getPath(state, 'data[0]'))),
-                        h('tbody', makeTBodyChildrenFromData(getPath(state, 'data')))
-                    ])
-                ])
+                h('div.Grid-cell', [makeTableFromData(getPath(state, 'data'))])
             ]),
-            h('div.Grid-cell', [h('h1', ['Table Template Editor']),makeFormFromDataObj({dataSource:'/users'})])
+            h('div.Grid-cell.u-1of3', [h('h1', ['Table Template Editor']), makeFormFromDataObj({dataSource:'/users'})])
 
         ])
     ]);
