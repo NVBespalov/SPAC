@@ -20,19 +20,56 @@ require('./styles/spac.application.scss');
 const initialState = {
     authenticate: {
         session: {}
-    }, 
-    constructor: {}
+    },
+    constructor: {
+        table: {
+            data: [
+                {
+                    desert: 'Frozen yogurt',
+                    calories: 159,
+                    fat: 6.0,
+                    carbs: 24,
+                    protein: 4.0,
+                    sodium: 87,
+                    calcium: '14%',
+                    iron: '1%'
+                },
+                {
+                    desert: 'Ice cream sandwich',
+                    calories: 237,
+                    fat: 9.0,
+                    carbs: 16,
+                    protein: 4.3,
+                    sodium: 129,
+                    calcium: '8%',
+                    iron: '1%'
+                },
+                {
+                    desert: 'Eclair',
+                    calories: 262,
+                    fat: 16.0,
+                    carbs: 24,
+                    protein: 6.0,
+                    sodium: 337,
+                    calcium: '6%',
+                    iron: '7%'
+                }
+            ],
+            header: {},
+            selection: {}
+        }
+    }
 };
-const ApplicationConstructor = module.exports = function ApplicationConstructor ($container) {
+const ApplicationConstructor = module.exports = function ApplicationConstructor($container) {
     const subject$ = new Subject();
     const currentState = lSUtils.get(lSPath) || initialState;
     let tree;
 
-    function renderSPACApplication (subject$, state) {
+    function renderSPACApplication(subject$, state) {
         const session = getPath(state, 'authenticate.session');
         let result;
         if (session) {
-            result = constructorScene(subject$, state);
+            result = constructorScene(subject$, getPath(state, 'constructor'));
         } else {
             // authenticateScene = new AuthenticateScene($container);
             // authenticateScene.state
@@ -48,7 +85,7 @@ const ApplicationConstructor = module.exports = function ApplicationConstructor 
 
     this.state = subject$
         .startWith(currentState)
-        .scan(function processNextState (prev, next) {
+        .scan(function processNextState(prev, next) {
             const currentState = extend(true, {}, prev, next);
             lSUtils.set(lSPath, currentState);
             return currentState;
@@ -62,7 +99,7 @@ const ApplicationConstructor = module.exports = function ApplicationConstructor 
     });
 };
 ApplicationConstructor.prototype = {
-    dispose: function disposeApplication () {
+    dispose: function disposeApplication() {
         this.state$.coplete();
     }
 };

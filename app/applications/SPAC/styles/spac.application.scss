@@ -14,90 +14,67 @@ $FontName: "Roboto" !default;
 $FontVersion: "1.1.0" !default;
 $FontType: 'Regular';
 
-$indigo: (
-        50: #E8EAF6,
-        100: #C5CAE9,
-        200: #9FA8DA,
-        300: #7986CB,
-        400: #5C6BC0,
-        500:#3F51B5,
-        600: #3949AB,
-        700:#303F9F,
-        800: #283593,
-        900: #1A237E,
-        A100: #8C9EFF,
-        A200: #536DFE,
-        A400: #3D5AFE,
-        A700:#304FFE,
-);
+$indigo: (50: #E8EAF6, 100: #C5CAE9, 200: #9FA8DA, 300: #7986CB, 400: #5C6BC0, 500:#3F51B5, 600: #3949AB, 700:#303F9F, 800: #283593, 900: #1A237E, A100: #8C9EFF, A200: #536DFE, A400: #3D5AFE, A700:#304FFE);
+$gray: (50: #FAFAFA, 100: #F5F5F5, 200: #EEEEEE, 300: #E0E0E0, 400: #BDBDBD, 500:#9E9E9E, 600: #757575, 700:#616161, 800: #424242, 900: #212121);
+
+$density-ratios: (ldpi: .75, mdpi: 1, hdpi: 1.5, xhdpi:2, xxhdpi:3, xxxhdpi:4);
+
+@function dpToPx($dp, $density-ratio: .75) {
+  @return $dp * $density-ratio + px;
+}
 
 @mixin height-dp($dp) {
   @media #{$ldpi} {
-    height: $dp * .75 +px;
+    height: dpToPx($dp, #{map_get($density-ratios, 'ldpi')});
   }
   @media #{$mdpi} {
-    height: $dp * 1 + px;
+    height: dpToPx($dp, #{map_get($density-ratios, 'mdpi')});
   }
   @media #{$hdpi} {
-    height: $dp * 1.5 + px;
+    height: dpToPx($dp, #{map_get($density-ratios, 'hdpi')});
   }
   @media #{$xhdpi} {
-    height: $dp * 2 + px;
+    height: dpToPx($dp, #{map_get($density-ratios, 'xhdpi')});
   }
   @media #{$xxhdpi} {
-    height: $dp * 3 + px
+    height: dpToPx($dp, #{map_get($density-ratios, 'xxhdpi')});
   }
   @media #{$xxxhdpi} {
-    height: $dp * 4 + px
+    height: dpToPx($dp, #{map_get($density-ratios, 'xxxhdpi')});
   }
 }
 
 @mixin font-size-sp($sp) {
   @media #{$ldpi} {
-    font-size: $sp * .75 +px;
+    font-size: dpToPx($sp, #{map_get($density-ratios, 'ldpi')});
   }
   @media #{$mdpi} {
-    font-size: $sp * 1 + px;
+    font-size: dpToPx($sp, #{map_get($density-ratios, 'mdpi')});
   }
   @media #{$hdpi} {
-    font-size: $sp * 1.5 + px;
+    font-size: dpToPx($sp, #{map_get($density-ratios, 'hdpi')});
   }
   @media #{$xhdpi} {
-    font-size: $sp * 2 + px;
+    font-size: dpToPx($sp, #{map_get($density-ratios, 'xhdpi')});
   }
   @media #{$xxhdpi} {
-    font-size: $sp* 3 + px
+    font-size: dpToPx($sp, #{map_get($density-ratios, 'xxhdpi')});
   }
   @media #{$xxxhdpi} {
-    font-size: $sp * 4 + px
+    font-size: dpToPx($sp, #{map_get($density-ratios, 'xxxhdpi')});
   }
 }
 
-@mixin padding-dp($top, $right, $bottom, $left) {
-  @media #{$ldpi} {
-    padding: $top * .75 +px, $right *.075 + px, $bottom *.075 + px, $left *.075 + px;
-  }
-  @media #{$mdpi} {
-    padding: $top * 1 +px, $right * 1 + px, $bottom * 1 + px, $left * 1 + px;
-  }
-  @media #{$hdpi} {
-    padding: $top * 1.5 +px, $right * 1.5 + px, $bottom * 1.5 + px, $left * 1.5 + px;
-  }
-  @media #{$xhdpi} {
-    padding: $top * 2 +px, $right * 2 + px, $bottom * 2 + px, $left * 2 + px;
-  }
-  @media #{$xxhdpi} {
-    padding: $top * 3 +px, $right * 3 + px, $bottom * 3 + px, $left * 3 + px;
-  }
-  @media #{$xxxhdpi} {
-    padding: $top * 4 +px, $right * 4 + px, $bottom * 4 + px, ($left * 4) + px;
-  }
-}
+@mixin padding-dp($top: 0, $right: 0, $bottom: 0, $left: 0) {
+  padding: dpToPx($top) dpToPx($right) dpToPx($bottom) dpToPx($left);
+};
 
 @mixin fontdef-woff($FontPath, $FontName, $FontVersion, $FontType) {
   src: url('#{$FontPath}/#{$FontName}/#{$FontType}/#{$FontName}#{$FontType}.woff?v=#{$FontVersion}') format('woff'),
   url('#{$FontPath}/#{$FontName}/#{$FontType}/#{$FontName}#{$FontType}.ttf?v=#{$FontVersion}') format('truetype');
 }
+
+//------------------------------------------------------------------------
 
 @font-face {
   font-family: RobotoLight;
@@ -556,29 +533,164 @@ body {
 table.table-widget {
   background-color: #ffffff;
   width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
+  tr {
+    border-bottom: 1px solid darken(white, 12%);
+  }
+  td, th {
+    &.text {
+      text-align: left;
+    }
+    &.number {
+      text-align: right;
+    }
+    &.select {
+      text-align: left;
+      padding: 0 24px;
+      > .checkbox {
+        margin: 8px;
+        color: #{map_get($gray, 500)};
+        cursor: pointer;
+        padding-left: 18px;
+        padding-right: 0;
+        line-height: 26px;
+        &.checked{
+          .check-mark {
+            animation: checkbox-animation 140ms forwards;
+          }
+        }
+        .icon {
+          width: 18px;
+          height: 18px;
+          position: relative;
+          border: 2px solid #{map_get($gray, 500)};
+          &.pressed{
+            >.ripple {
+              animation: ripple-amimation 140ms;
+            }
+          }
+          >.ripple{
+            position: absolute;
+            top: calc(0px - (2.66 * 18px - 18px) / 2);
+            left: calc(0px - (2.66 * 18px - 18px) / 2);
+            width: calc(2.66 * 18px);
+            height: calc(2.66 * 18px);
+            color: #212121;
+            opacity: 0;
+            pointer-events: none;
+            background-color: #3f51b5;
+            border-radius: 50%;
+          }
+          > .check-mark {
+            position: absolute;
+            width: 36%;
+            height: 70%;
+            border: none white;
+            border-right: calc(2 / 15 * 18px) solid;
+            border-bottom: calc(2 / 15 * 18px) solid;
+            -webkit-transform-origin: 97% 86%;
+            transform-origin: 97% 86%;
+            box-sizing: content-box;
+
+            @-webkit-keyframes checkbox-animation {
+              0% {
+                -webkit-transform: scale(0, 0) rotate(45deg);
+              }
+
+              100% {
+                -webkit-transform: scale(1, 1) rotate(45deg);
+              }
+
+            }
+
+            @keyframes checkbox-animation {
+              0% {
+                transform: scale(0, 0) rotate(45deg);
+              }
+
+              100% {
+                transform: scale(1, 1) rotate(45deg);
+              }
+
+            }
+
+            @-webkit-keyframes ripple-animation {
+              0% {
+                -webkit-transform: scale(0, 0);
+                opacity:0;
+              }
+
+              100% {
+                -webkit-transform: scale(1, 1);
+                opacity:0.6;
+              }
+
+            }
+
+            @keyframes ripple-animation {
+              0% {
+                transform: scale(0, 0);
+                opacity:0;
+              }
+
+              100% {
+                transform: scale(1, 1);
+                opacity:0.6;
+              }
+
+            }
+
+          }
+        }
+      }
+    }
+  }
   > thead {
     font-family: RobotoMedium, serif;
-    color: lighten(#000000, 54%);
+    color: darken(white, 54%);
     > tr {
-      @include height-dp(64);
-      @include font-size-sp(12);
+      height: 64px;
+      font-size: 12px;
+      border-bottom: 1px solid darken(white, 12%);
+      > th {
+        padding: 0 56px;
+        &:nth-child(2) {
+          padding: 0 24px;
+        }
+        &:last-child {
+          padding: 0 24px;
+        }
+      }
     }
   }
   > tbody {
     font-family: RobotoRegular, sans-serif;
     @include font-size-sp(12);
-    color: darken(#000000, 87%);
+    color: darken(white, 87%);
     > tr {
-      @include height-dp(56);
+      height: 56px;
       &:last-child {
-        @include padding-dp(0 24 0 0);
+        border-bottom: none;
+      }
+      &:hover {
+        background-color: #{map_get($gray, 200)};
+      }
+      &.selected {
+        background-color: #{map_get($gray, 100)};
       }
       > td {
-        &.text {
-          text-align: left;
+        padding: 0 56px 0 0;
+        font-size: 13px;
+        &:first-child {
+          padding: 0 24px;
         }
-        &.number {
-          text-align: right;
+        &:nth-child(2) {
+          padding: 0 24px;
+        }
+        &:last-child {
+          padding: 0 24px;
+          border-bottom: none;
         }
       }
 

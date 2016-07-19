@@ -5,15 +5,16 @@ const h = require('snabbdom/h');
 const lSPath = 'constructorScene';
 const initialState = {};
 const getPath = require('./../../../utils/objects').getPath;
+const extend = require('extend');
 const attributes = {
     "hidden": {
-        type:'radio',
-        value:true,
+        type: 'radio',
+        value: true,
         attribute: 'hidden',
         label: 'hidden'
     },
     "high": {
-        type:'number',
+        type: 'number',
         value: 0,
         attribute: 'high',
         label: 'high'
@@ -23,15 +24,15 @@ const attributes = {
     "httpequiv": ["meta"],
     "icon": ["command"],
     "id": {
-        type:'text',
-        value:'',
+        type: 'text',
+        value: '',
         attribute: 'id',
         label: 'id'
     },
     "ismap": ["img"],
     "itemprop": {
-        type:'text',
-        value:'',
+        type: 'text',
+        value: '',
         attribute: 'itemprop',
         label: 'itemprop'
     },
@@ -39,8 +40,8 @@ const attributes = {
     "kind": ["track"],
     "label": ["track"],
     "lang": {
-        type:'text',
-        value:'',
+        type: 'text',
+        value: '',
         attribute: 'lang',
         label: 'lang'
     },
@@ -74,8 +75,8 @@ const attributes = {
     "rowspan": ["td", "th"],
     "sandbox": ["iframe"],
     "spellcheck": {
-        type:'radio',
-        value:false,
+        type: 'radio',
+        value: false,
         attribute: 'spellcheck',
         label: 'spellcheck'
     },
@@ -94,8 +95,8 @@ const attributes = {
     "start": ["ol"],
     "step": ["input"],
     "style": {
-        type:'select',
-        value:[],
+        type: 'select',
+        value: [],
         attribute: 'style',
         label: 'style',
         options: [],
@@ -103,15 +104,15 @@ const attributes = {
     },
     "summary": ["table"],
     "tabindex": {
-        type:'number',
-        value:0,
+        type: 'number',
+        value: 0,
         attribute: 'tabindex',
         label: 'tabindex'
     },
     "target": ["a", "area", "base", "form"],
     "title": {
-        type:'text',
-        value:'',
+        type: 'text',
+        value: '',
         attribute: 'title',
         label: 'title'
     },
@@ -128,16 +129,18 @@ const attributes = {
     "cite": ["blockquote", "del", "ins", "q"],
     "class": {
         _value: [],
-        type:'select',
+        type: 'select',
         attribute: 'class',
         label: 'class',
         options: [],
         multiple: true,
-        set value (val) {
+        set value(val) {
             if (_.isString(val) && val) this._value = _.union(this._value, val.split(' '));
             else if (_.isArray(val) && val.length) this._value = _.union(this._value, val);
         },
-        get value () {return this._value}
+        get value() {
+            return this._value
+        }
     },
     "code": ["applet"],
     "codebase": ["applet"],
@@ -146,53 +149,57 @@ const attributes = {
     "colspan": ["td", "th"],
     "content": ["meta"],
     "contenteditable": {
-        type:'radio',
-        value:true,
+        type: 'radio',
+        value: true,
         attribute: 'contenteditable',
         label: 'contenteditable'
     },
     "contextmenu": {
-        type:'text',
-        value:'',
+        type: 'text',
+        value: '',
         attribute: 'contextmenu',
         label: 'contextmenu'
     },
     "controls": ["audio", "video"],
     "coords": ["area"],
     "data": {
-        type:'select',
+        type: 'select',
         _value: {},
         attribute: 'data',
         label: 'data',
         options: [],
         multiple: true,
-        get value () {return $.extend({},this._value)},
-        set value (val) {_.extend(this._value, val)}
+        get value() {
+            return $.extend({}, this._value)
+        },
+        set value(val) {
+            _.extend(this._value, val)
+        }
     },
     "datetime": ["del", "ins", "time"],
     "default": ["track"],
     "defer": ["script"],
     "dir": {
-        type:'text',
-        value:'',
+        type: 'text',
+        value: '',
         attribute: 'dir',
         label: 'dir'
     },
     "dirname": ["input", "textarea"],
     "disabled": ["button", "command", "fieldset", "input", "keygen", "optgroup", "option", "select", "textarea"],
     "download": ["a", "area"],
-    "draggable":{
-        type:'radio',
-        value:false,
+    "draggable": {
+        type: 'radio',
+        value: false,
         attribute: 'draggable',
         label: 'draggable'
     },
     "dropzone": {
-        type:'select',
-        value:'',
+        type: 'select',
+        value: '',
         attribute: 'dropzone',
         label: 'dropzone',
-        options: ['','copy', 'move', 'link'],
+        options: ['', 'copy', 'move', 'link'],
         multiple: false
     },
     "enctype": ["form"],
@@ -204,8 +211,8 @@ const attributes = {
     "accept": ["form", "input"],
     "acceptcharset": ["form"],
     "accesskey": {
-        type:'text',
-        value:'',
+        type: 'text',
+        value: '',
         attribute: 'accesskey',
         label: 'accesskey'
     },
@@ -234,41 +241,51 @@ module.exports = function render(subject$, state) {
         if (typeof o === 'object') return h(getPath(o, 'tagName'), getPath(o, 'dataObject'), arrayToH(getPath(o, 'children')));
     }
 
-    state.data = [
-        {
-            desert: 'Frozen yogurt',
-            calories: 159,
-            fat: 6.0,
-            carbs: 24,
-            protein: 4.0,
-            sodium: 87,
-            calcium: '14%',
-            iron: '1%'
-        },
-        {
-            id: 1,
-            firstName: 'firstName1',
-            lastName: 'lastName1',
-            displayName: 'displayName1',
-            email: 'displayName1@email.com'
-        }
-    ];
+    function keyToTh(dataObj, key) {
+        var value = getPath(dataObj, key);
+        return h('th', {class: {text: typeof value === 'string', number: typeof value === 'number'}}, [key]);
+    }
 
-    function keyToTh(key) {
-        return h('th', [key]);
+    function makeSelectOperation(tagName, rowIndex) {
+        var currentRowSelection = getPath(state, `table.selection.${rowIndex}`);
+        var headerSelection = getPath(state, 'table.selection.*');
+        var checked = currentRowSelection === 1 || (headerSelection === 1 && headerSelection !== 0);
+
+        function onClickSelectOperation () {
+            let selection = {};
+            selection[rowIndex] = checked ? 0 : 1;
+            state.table.selection = extend(true, {}, state.table.selection, selection);
+            subject$.next({constructor: state});
+        }
+        return h(tagName, {class: {'select': true}}, [
+            h('div', {class: {checkbox: true, checked: !!checked}}, [
+                h('div', {
+                    class: {icon: true, pressed: false}, on: {
+                        click: onClickSelectOperation
+                    }
+                }, [
+                    h('div.ripple'),
+                    h('div.check-mark', {style: {display: checked ? 'block' : 'none'}})
+                ])
+            ])
+        ]);
     }
 
     function makeTHChildrenFromDataObj(dataObj) {
-        return h('tr', Object.keys(dataObj).map(keyToTh));
+        const selectOperation = makeSelectOperation('th', '*');
+        const children = Object.keys(dataObj).map(keyToTh.bind(null, dataObj));
+        return h('tr', [selectOperation].concat(children));
     }
 
     function objectKeyToTd(object, key) {
         var value = getPath(object, key);
-        return h('td', {class:{text: typeof value === 'string', number: typeof value === 'number'}}, [value]);
+        return h('td', {class: {text: typeof value === 'string', number: typeof value === 'number'}}, [value]);
     }
 
-    function objectToTr(object) {
-        return h('tr', Object.keys(object).map(objectKeyToTd.bind(null, object)));
+    function objectToTr(object, index) {
+        const selectOperation = makeSelectOperation('td', index);
+        var children = Object.keys(object).map(objectKeyToTd.bind(null, object));
+        return h('tr', [selectOperation].concat(children));
     }
 
     function makeTBodyChildrenFromData(data) {
@@ -302,9 +319,9 @@ module.exports = function render(subject$, state) {
     return h('div', {class: {'scene-constructor': true}}, [
         h('div.Grid.Grid--gutters', {}, [
             h('div.Grid-cell.scene-preview', [
-                h('div.Grid-cell', [makeTableFromData(getPath(state, 'data'))])
+                h('div.Grid-cell', [makeTableFromData(getPath(state, 'table.data'))])
             ]),
-            h('div.Grid-cell.u-1of3', [h('h1', ['Table Template Editor']), makeFormFromDataObj({dataSource:'/users'})])
+            h('div.Grid-cell.u-1of3', [h('h1', ['Table Template Editor']), makeFormFromDataObj({dataSource: '/users'})])
 
         ])
     ]);
