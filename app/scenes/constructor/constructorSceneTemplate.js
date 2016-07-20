@@ -1,10 +1,13 @@
 /**
  * Created by nickbespalov on 10.07.16.
  */
+'use strict';
 const h = require('snabbdom/h');
 const lSPath = 'constructorScene';
 const initialState = {};
 const getPath = require('./../../../utils/objects').getPath;
+const setPath = require('./../../../utils/objects').setPath;
+const object = require('./../../../utils/objects').object;
 const extend = require('extend');
 const attributes = {
     "hidden": {
@@ -230,7 +233,10 @@ require('./../../widgets/form/materialForm/styles/materialForm.scss');
 
 module.exports = function render(subject$, state) {
 
+    var headerSelectionPath = 'table.selection.*';
+
     function objectToH(o) {
+
         function arrayToH(map) {
             if (map && map.length === 0) return [];
             return map.map(objectToH);
@@ -242,26 +248,33 @@ module.exports = function render(subject$, state) {
     }
 
     function keyToTh(dataObj, key) {
-        var value = getPath(dataObj, key);
+        const value = getPath(dataObj, key);
         return h('th', {class: {text: typeof value === 'string', number: typeof value === 'number'}}, [key]);
+    }
+    function processSelection(checked, m, k) {
+        return extend(m, object([k], [checked ? 0 : 1]));
+    }
+
+    function selectionIsEqualsTo (condition, nextState, k) {return getPath(nextState, `table.selection.${k}`) === condition}
+
+    function onClickSelectOperation(rowIndex, checked) {
+        let result = {};
+        result[rowIndex] = checked ? 0 : 1;
+        result = rowIndex === '*' ? Object.keys(getPath(state, 'table.data')).reduce(processSelection.bind(null, checked), result) : result;
+        let nextState = extend(true, {}, state, {table: {selection: result}});
+        var selectionKeys = Object.keys(getPath(nextState, 'table.selection'));
+        var lastSelected = selectionKeys.filter(selectionIsEqualsTo.bind(null, 1, nextState));
+        lastSelected.length === 1 && getPath(nextState, headerSelectionPath) === 1 ? setPath(nextState, headerSelectionPath, 0) : undefined;
+        subject$.next({constructor: nextState});
     }
 
     function makeSelectOperation(tagName, rowIndex) {
-        var currentRowSelection = getPath(state, `table.selection.${rowIndex}`);
-        var headerSelection = getPath(state, 'table.selection.*');
-        var checked = currentRowSelection === 1 || (headerSelection === 1 && headerSelection !== 0);
-
-        function onClickSelectOperation () {
-            let selection = {};
-            selection[rowIndex] = checked ? 0 : 1;
-            state.table.selection = extend(true, {}, state.table.selection, selection);
-            subject$.next({constructor: state});
-        }
+        const checked = getPath(state, `table.selection.${rowIndex}`) === 1;
         return h(tagName, {class: {'select': true}}, [
             h('div', {class: {checkbox: true, checked: !!checked}}, [
                 h('div', {
                     class: {icon: true, pressed: false}, on: {
-                        click: onClickSelectOperation
+                        click: onClickSelectOperation.bind(null, rowIndex, checked)
                     }
                 }, [
                     h('div.ripple'),
@@ -285,7 +298,7 @@ module.exports = function render(subject$, state) {
     function objectToTr(object, index) {
         const selectOperation = makeSelectOperation('td', index);
         var children = Object.keys(object).map(objectKeyToTd.bind(null, object));
-        return h('tr', [selectOperation].concat(children));
+        return h('tr', {class:{selected: getPath(state, `table.selection.${index}`)}},[selectOperation].concat(children));
     }
 
     function makeTBodyChildrenFromData(data) {
