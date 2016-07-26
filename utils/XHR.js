@@ -1,6 +1,6 @@
 const getPath = require('./objects').getPath;
 const extend = require('extend');
-const Observable = require('rxjs/rx').Observable;
+const Observable = require('rxjs/Rx').Observable;
 /**
  * @function onXHRLoaded
  * @throws SyntaxError - Throws SyntaxError if response is not a JSON string

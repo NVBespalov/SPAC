@@ -4,7 +4,7 @@
 'use strict';
 require('./styles/fromWidget.scss');
 
-const Observable = require('rxjs/rx').Observable;
+const Observable = require('rxjs/Rx').Observable;
 const Subject = require('rxjs/rx').Subject;
 const h = require('snabbdom/h');
 const getJSON$ = require('./../../../utils/XHR').getJSON$;

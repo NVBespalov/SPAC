@@ -1,5 +1,5 @@
 'use strict';
-const Observable = require('rxjs/rx').Observable;
+const Observable = require('rxjs/Rx').Observable;
 const Application = require('./applications/SPAC/SPACApplication.js');
 
 Observable.fromEvent(document, 'DOMContentLoaded')

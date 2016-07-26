@@ -1,7 +1,7 @@
 /**
  * Created by nickbespalov on 12.07.16.
  */
-const Subject = require('rxjs/rx').Subject;
+const Subject = require('rxjs/Rx').Subject;
 const constructorScene = require('./../../scenes/constructor/constructorSceneTemplate');
 const AuthenticateScene = require('./../../scenes/authenticate/AuthenticateScene');
 const extend = require('extend');

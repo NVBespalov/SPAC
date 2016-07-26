@@ -2,7 +2,7 @@
  * Created by nickbespalov on 12.07.16.
  */
 require('./styles/authnticate.scss');
-const Subject = require('rxjs/rx').Subject;
+const Subject = require('rxjs/Rx').Subject;
 const form = require('./../../widgets/form/materialForm/MaterialFormTemplate');
 const h = require('snabbdom/h');
 const getJSON$ = require('./../../../utils/XHR').getJSON$;
