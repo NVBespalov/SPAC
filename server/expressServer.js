@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === 'development') {
         console.info('openssl genrsa -des3 -passout pass:x -out '+__dirname+'/server.pass.key 2048 \n');
         console.info('openssl rsa -passin pass:x -in '+__dirname+'/server.pass.key -out '+__dirname+'/server.key \n');
         console.info('rm '+__dirname+'/server.pass.key \n');
-        console.info('openssl req -new -key '+__dirname+'/server.key -out '+__dirname+'/server.csr');
+        console.info('openssl req -new -key '+__dirname+'/server.key -out '+__dirname+'/server.csr \n');
         console.info('openssl x509 -req -days 365 -in '+__dirname+'/server.csr -signkey '+__dirname+'/server.key -out '+__dirname+'/server.crt\n\n');
         process.exit();
     }

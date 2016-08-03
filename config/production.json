@@ -29,6 +29,9 @@
       }
     }
   },
+  "mongoStore":{
+    "ttl": 1209600
+  },
   "session": {
     "secret": "the Secret",
     "cookie": {
