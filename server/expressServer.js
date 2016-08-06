@@ -5,7 +5,7 @@ process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR ? process.env.NODE_CON
 const express = require('express'), app = express(), config = require('config'), bodyParser = require('body-parser'),
     compression = require('compression'), https = require('https'), http = require('http'), fs = require('fs'),
     serverKey = __dirname + '/server.key', serverCert = __dirname + '/server.crt',
-    i18n = require('./localizer')(app), logger = require('morgan'), helmet = require('helmet');
+    i18n = require('./localizer')(app), logger = require('morgan'), helmet = require('helmet'), exphbs  = require('express-handlebars');
 
 console.info("==================");
 console.info(i18n.__('express running in env', process.env.NODE_ENV));
@@ -13,7 +13,10 @@ console.info("==================");
 
 app.use(require('./error/sendHttpError'));
 app.use(helmet());
+app.engine('handlebars', exphbs({}));
+app.set('view engine', 'handlebars');
 app.use(express.static(path.resolve(__dirname, './../public')));
+
 
 require('./db.connect');
 

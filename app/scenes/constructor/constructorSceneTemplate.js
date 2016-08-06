@@ -251,6 +251,7 @@ module.exports = function render(subject$, state) {
         const value = getPath(dataObj, key);
         return h('th', {class: {text: typeof value === 'string', number: typeof value === 'number'}}, [key]);
     }
+
     function processSelection(checked, m, k) {
         return extend(m, object([k], [checked ? 0 : 1]));
     }
