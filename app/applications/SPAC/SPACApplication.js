@@ -17,6 +17,7 @@ const patch = require('snabbdom').init([
     require('snabbdom/modules/dataset')
 ]);
 require('./styles/spac.application.scss');
+
 const initialState = extend(true, {}, {
     authenticate: {
         session: {}
@@ -56,7 +57,7 @@ const initialState = extend(true, {}, {
         ]
     }
 }, JSON.parse(serverSideState));
-delete serverSideState;
+serverSideState = null;
 const ApplicationConstructor = module.exports = function ApplicationConstructor($container) {
     const subject$ = new Subject();
     const currentState = lSUtils.get(lSPath) || initialState;
