@@ -15,7 +15,7 @@ const patch = require('snabbdom').init([
 const h = require('snabbdom/h');
 module.exports = {
     index: function (req, res) {
-        res.render('home', {body: toHTML(h('h1', {}, 'Hello, World!'))} );
+        res.render('home', {body: toHTML(h('h1', {}, 'Hello, World!')), data: '["a", "b"]'} );
     }
 
 };

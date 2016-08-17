@@ -60,10 +60,15 @@ function object(keys, values) {
     }
     return keys.reduce(toObject, {});
 }
+function size (item) {
+    return item && Object.keys(item).length
+}
+
 module.exports = {
     getPath: getPath,
     setPath: setPath,
     object: object,
+    size: size,
     localStorage: {
         get: getFromLocalStorage,
         set: setToLocalStorage,

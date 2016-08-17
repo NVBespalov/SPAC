@@ -17,49 +17,46 @@ const patch = require('snabbdom').init([
     require('snabbdom/modules/dataset')
 ]);
 require('./styles/spac.application.scss');
-const initialState = {
+const initialState = extend(true, {}, {
     authenticate: {
         session: {}
     },
     constructor: {
-        table: {
-            data: [
-                {
-                    desert: 'Frozen yogurt',
-                    calories: 159,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0,
-                    sodium: 87,
-                    calcium: '14%',
-                    iron: '1%'
-                },
-                {
-                    desert: 'Ice cream sandwich',
-                    calories: 237,
-                    fat: 9.0,
-                    carbs: 16,
-                    protein: 4.3,
-                    sodium: 129,
-                    calcium: '8%',
-                    iron: '1%'
-                },
-                {
-                    desert: 'Eclair',
-                    calories: 262,
-                    fat: 16.0,
-                    carbs: 24,
-                    protein: 6.0,
-                    sodium: 337,
-                    calcium: '6%',
-                    iron: '7%'
-                }
-            ],
-            header: {},
-            selection: {}
-        }
+        data: [
+            {
+                desert: 'Frozen yogurt',
+                calories: 159,
+                fat: 6.0,
+                carbs: 24,
+                protein: 4.0,
+                sodium: 87,
+                calcium: '14%',
+                iron: '1%'
+            },
+            {
+                desert: 'Ice cream sandwich',
+                calories: 237,
+                fat: 9.0,
+                carbs: 16,
+                protein: 4.3,
+                sodium: 129,
+                calcium: '8%',
+                iron: '1%'
+            },
+            {
+                desert: 'Eclair',
+                calories: 262,
+                fat: 16.0,
+                carbs: 24,
+                protein: 6.0,
+                sodium: 337,
+                calcium: '6%',
+                iron: '7%'
+            }
+        ]
     }
-};
+}, JSON.parse(serverSideState));
+delete serverSideState;
 const ApplicationConstructor = module.exports = function ApplicationConstructor($container) {
     const subject$ = new Subject();
     const currentState = lSUtils.get(lSPath) || initialState;
