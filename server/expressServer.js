@@ -11,10 +11,13 @@ console.info("==================");
 console.info(i18n.__('express running in env', process.env.NODE_ENV));
 console.info("==================");
 
-app.use(require('./error/sendHttpError'));
+// app.use(require('./error/sendHttpError'));
 app.use(helmet());
+
 app.engine('handlebars', exphbs({}));
+app.set('views', __dirname + '/views');
 app.set('view engine', 'handlebars');
+
 app.use(express.static(path.resolve(__dirname, './../public')));
 
 

@@ -25,7 +25,7 @@ function sessionRegenerate(user, req, next) {
  */
 function loadUser(req, res, next) {
     var conditions = {email: req.body.email.toLowerCase()};
-    User.findOne(conditions, function (err, user) {
+    User.findOne(conditions, {}, function (err, user) {
         if (err) {
             return next(err);
         } else if (!user) {
