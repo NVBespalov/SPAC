@@ -63,7 +63,16 @@ function object(keys, values) {
 function size (item) {
     return item && Object.keys(item).length
 }
-
+/**
+ * @description Get the count of the keys in the given object
+ *  @throws {TypeError} - If the value of the collection argument is null or undefined
+ * then the TypeError will be thrown - Cannot convert undefined or null to object
+ * @param {Object|String|Array} collection - The object to count keys
+ * @returns {Number}
+ */
+const collectionSize = (collection) => {
+    return Object.keys(collection).length;
+};
 module.exports = {
     getPath: getPath,
     setPath: setPath,
@@ -73,5 +82,6 @@ module.exports = {
         get: getFromLocalStorage,
         set: setToLocalStorage,
         remove: removeFromLocalStorage
-    }
+    },
+    collectionSize: collectionSize
 };
